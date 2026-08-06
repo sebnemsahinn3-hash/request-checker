@@ -1,0 +1,88 @@
+[
+  {
+    "ContainingType": "PTN.WebAPI.Controllers.HealthController",
+    "Method": "CheckDatabase",
+    "RelativePath": "api/Health/db-check",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "PTN.WebAPI.Controllers.HealthController",
+    "Method": "DownloadLogFileAsync",
+    "RelativePath": "api/Health/download-log",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "PTN.WebAPI.Controllers.HealthController",
+    "Method": "DownloadLogFileAsync",
+    "RelativePath": "api/Health/DownloadLogFileAsync",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "PTN.WebAPI.Controllers.HealthController",
+    "Method": "GetLogs",
+    "RelativePath": "api/Health/logs",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "PTN.WebAPI.Controllers.HealthController",
+    "Method": "GetStatus",
+    "RelativePath": "api/Health/status",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "PTN.WebAPI.Controllers.RequestLogController",
+    "Method": "GetAllLogsAsync",
+    "RelativePath": "api/RequestLog",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": [
+      {
+        "Type": "System.Collections.Generic.List\u00601[[PTN.WebAPI.Dtos.RequestLogDto, PTN.WebAPI, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "PTN.WebAPI.Controllers.RequestLogController",
+    "Method": "DeleteLogsAsync",
+    "RelativePath": "api/RequestLog",
+    "HttpMethod": "DELETE",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "deleteDto",
+        "Type": "PTN.WebAPI.Dtos.RequestLogDeleteDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  }
+]

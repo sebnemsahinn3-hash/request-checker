@@ -1,0 +1,211 @@
+{
+  "openapi": "3.0.4",
+  "info": {
+    "title": "PTN.WebAPI",
+    "version": "1.0"
+  },
+  "paths": {
+    "/api/Health/status": {
+      "get": {
+        "tags": [
+          "Health"
+        ],
+        "summary": "Canlı sistem analiz istatistiklerini ve özet metrikleri döner.",
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/Health/logs": {
+      "get": {
+        "tags": [
+          "Health"
+        ],
+        "summary": "Canlı sistem analiz istatistiklerini ve özet metrikleri döner.",
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/Health/download-log": {
+      "get": {
+        "tags": [
+          "Health"
+        ],
+        "summary": "Analiz loglarını .txt metin dosyası olarak bilgisayara indirir.",
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/Health/DownloadLogFileAsync": {
+      "get": {
+        "tags": [
+          "Health"
+        ],
+        "summary": "Analiz loglarını .txt metin dosyası olarak bilgisayara indirir.",
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/Health/db-check": {
+      "get": {
+        "tags": [
+          "Health"
+        ],
+        "summary": "PostgreSQL veritabanı bağlantı durumunu ve toplam kayıt sayısını test eder.",
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/RequestLog": {
+      "get": {
+        "tags": [
+          "RequestLog"
+        ],
+        "summary": "Veritabanındaki tüm istek loglarını DTO formatında listelemek için kullanılan API.",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/RequestLogDto"
+                  }
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/RequestLogDto"
+                  }
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/RequestLogDto"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "RequestLog"
+        ],
+        "summary": "İstek loglarını DTO parametrelerine göre siler (FluentValidation kontrollü).",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RequestLogDeleteDto"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RequestLogDeleteDto"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/RequestLogDeleteDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "RequestLogDeleteDto": {
+        "type": "object",
+        "properties": {
+          "isAllDelete": {
+            "type": "boolean"
+          },
+          "count": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "RequestLogDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "url": {
+            "type": "string",
+            "nullable": true
+          },
+          "requestParams": {
+            "type": "string",
+            "nullable": true
+          },
+          "requestBody": {
+            "type": "string",
+            "nullable": true
+          },
+          "responseBody": {
+            "type": "string",
+            "nullable": true
+          },
+          "timing": {
+            "type": "string",
+            "nullable": true
+          },
+          "statusCode": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "message": {
+            "type": "string",
+            "nullable": true
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "additionalProperties": false
+      }
+    }
+  },
+  "tags": [
+    {
+      "name": "Health"
+    },
+    {
+      "name": "RequestLog"
+    }
+  ]
+}

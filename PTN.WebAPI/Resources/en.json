@@ -1,0 +1,11 @@
+{
+  "StatusCodes:01": "Success",
+  "StatusCodes:02": "Bad Request",
+  "StatusCodes:03": "Unauthorized Access",
+  "StatusCodes:04": "Resource Not Found",
+  "StatusCodes:05": "Internal Server Error",
+
+  "RequestMessages:SuccessMessage": "Operation completed successfully.",
+
+  "Validation:CountInvalid": "Count cannot be negative, it must be 0 or greater."
+}

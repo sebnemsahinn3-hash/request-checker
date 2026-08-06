@@ -1,0 +1,9 @@
+=== SERVİS SAĞLIK & İSTATİSTİK ÖZET RAPORU (5 DAKİKALIK PERİYOTLU) ===
+       Son Güncelleme Zamanı : 2026-08-04 17:28:36
+ 
+       Toplam Atılan İstek Sayısı     : 1527
+       200 OK Dönüş Sayısı           : 0
+       Sağlıklı (Healthy) İstekler   : 0
+       Sağlıksız (Unhealthy) İstekler: 1527
+       Başarı / Sağlık Oranı (%)     : %0,00
+===============================================
