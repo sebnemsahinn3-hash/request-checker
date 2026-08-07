@@ -36,6 +36,12 @@ builder.Services.AddSwaggerGen(c =>
 // PostgreSQL DbContext Kaydı
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
+// Redis Önbellek (Distributed Cache) Servis Kaydı
+builder.Services.AddStackExchangeRedisCache(options =>
+{
+    options.Configuration = builder.Configuration.GetConnectionString("Redis");
+    options.InstanceName = "PTN_HealthCheck_";
+});
 
 // BackgroundService, Service ve Repository Kayıtları
 builder.Services.AddHostedService<HealthCheckBackgroundService>();

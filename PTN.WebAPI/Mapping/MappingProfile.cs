@@ -11,7 +11,9 @@ namespace PTN.WebAPI.Mapping
     public class MappingProfile : Profile
     {
         public MappingProfile()
-        {
+        
+        {CreateMap<RequestLogEntity, RequestCacheModel>();
+            CreateMap<RequestCacheModel, RequestLogDto>();
             CreateMap<RequestLogEntity, RequestLogDto>()
                 .ForMember(dest => dest.Message, opt => opt.MapFrom((src, dest, destMember, context) =>
                 {
