@@ -1,6 +1,7 @@
-﻿using AutoMapper;
+using AutoMapper;
 using Microsoft.Extensions.Localization;
 using PTN.WebAPI.Dtos;
+using PTN.WebAPI.Entities;
 using PTN.WebAPI.Repositories;
 using System.Collections.Generic;
 using System.Threading;
@@ -25,6 +26,23 @@ namespace PTN.WebAPI.Services
         {
             var entities = await _repository.GetAllLogsAsync();
             return _mapper.Map<List<RequestLogDto>>(entities, opt => opt.Items["Localizer"] = _localizer);
+        }
+
+        public async Task<RequestLogDto> CreateLogAsync(RequestLogCreateDto dto)
+        {
+            var entity = _mapper.Map<RequestLogEntity>(dto);
+            await _repository.AddLogAsync(entity);
+            return _mapper.Map<RequestLogDto>(entity, opt => opt.Items["Localizer"] = _localizer);
+        }
+
+        public async Task<bool> UpdateLogAsync(int id, RequestLogUpdateDto dto)
+        {
+            var entity = await _repository.GetLogByIdAsync(id);
+            if (entity == null) return false;
+
+            _mapper.Map(dto, entity);
+            await _repository.UpdateLogAsync(entity);
+            return true;
         }
 
         public async Task DeleteLogsAsync(RequestLogDeleteDto dto)

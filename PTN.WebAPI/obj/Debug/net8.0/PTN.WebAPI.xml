@@ -29,6 +29,16 @@
             Veritabanındaki tüm istek loglarını DTO formatında listelemek için kullanılan API.
             </summary>
         </member>
+        <member name="M:PTN.WebAPI.Controllers.RequestLogController.CreateLogAsync(PTN.WebAPI.Dtos.RequestLogCreateDto)">
+            <summary>
+            Veritabanına yeni bir istek log kaydı ekler (POST).
+            </summary>
+        </member>
+        <member name="M:PTN.WebAPI.Controllers.RequestLogController.UpdateLogAsync(System.Int32,PTN.WebAPI.Dtos.RequestLogUpdateDto)">
+            <summary>
+            Belirtilen ID'ye sahip istek logunu günceller (PUT).
+            </summary>
+        </member>
         <member name="M:PTN.WebAPI.Controllers.RequestLogController.DeleteLogsAsync(PTN.WebAPI.Dtos.RequestLogDeleteDto)">
             <summary>
             İstek loglarını DTO parametrelerine göre siler (FluentValidation kontrollü).

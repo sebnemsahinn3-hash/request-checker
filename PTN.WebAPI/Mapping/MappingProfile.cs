@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using AutoMapper;
 using Microsoft.Extensions.Localization;
 using PTN.WebAPI.Dtos;
@@ -36,6 +36,8 @@ namespace PTN.WebAPI.Mapping
                 }));
 
             CreateMap<RequestLogDto, RequestLogEntity>();
+            CreateMap<RequestLogCreateDto, RequestLogEntity>();
+            CreateMap<RequestLogUpdateDto, RequestLogEntity>();
         }
     }
 }

@@ -7,5 +7,9 @@
 
   "RequestMessages:SuccessMessage": "İşlem başarıyla tamamlandı.",
 
-  "Validation:CountInvalid": "Silinecek adet (Count) eksi (-) bir değer olamaz, 0 veya 0'dan büyük olmalıdır."
+  "Validation:CountInvalid": "Silinecek adet (Count) eksi (-) bir değer olamaz, 0 veya 0'dan büyük olmalıdır.",
+  "Validation:CountTooLarge": "Güvenlik sebebiyle tek seferde en fazla 1000 kayıt silinebilir.",
+  "Validation:CountRequired": "Tümünü silme seçilmediğinde silinecek adet (Count) girilmesi zorunludur.",
+  "Validation:CountNullWhenIsAllDelete": "Tümünü silme seçildiğinde silinecek adet (Count) alanı boş bırakılmalıdır.",
+  "Validation:IsAllDeleteRequired": "IsAllDelete alanı boş bırakılamaz, true veya false olmalıdır."
 }

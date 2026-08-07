@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using PTN.WebAPI.Entities;
 using System.Collections.Generic;
 using System.Linq;
@@ -21,22 +21,30 @@ namespace PTN.WebAPI.Repositories
             await _context.SaveChangesAsync();
         }
 
+        public async Task<RequestLogEntity?> GetLogByIdAsync(int id)
+        {
+            return await _context.RequestLogs.FindAsync(id);
+        }
+
+        public async Task UpdateLogAsync(RequestLogEntity entity)
+        {
+            _context.RequestLogs.Update(entity);
+            await _context.SaveChangesAsync();
+        }
+
         public async Task<List<RequestLogEntity>> GetAllLogsAsync()
         {
             return await _context.RequestLogs.ToListAsync();
         }
 
-        // Mentörün istediği Akıllı Silme Mantığı
         public async Task DeleteLogsAsync(bool isAllDelete, int? count)
         {
             if (isAllDelete)
             {
-                // isAllDelete true ise TÜM kayıtları siler
                 _context.RequestLogs.RemoveRange(_context.RequestLogs);
             }
             else if (count.HasValue && count.Value > 0)
             {
-                // count girilmişse İLK OLUŞAN (tarihe göre sıralı) o kadar kaydı siler
                 var logsToDelete = await _context.RequestLogs
                     .OrderBy(x => x.CreatedAt)
                     .Take(count.Value)

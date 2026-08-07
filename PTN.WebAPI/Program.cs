@@ -6,6 +6,16 @@ using PTN.WebAPI.Repositories;
 using PTN.WebAPI.Services;
 
 var builder = WebApplication.CreateBuilder(args);
+// Arayüzün (UI) Backend'e bağlanabilmesi için CORS İzni veriyoruz:
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAll", policy =>
+    {
+        policy.AllowAnyOrigin()
+              .AllowAnyMethod()
+              .AllowAnyHeader();
+    });
+});
 
 // Add services to the container.
 builder.Services.AddRazorPages();
@@ -75,7 +85,8 @@ app.UseRequestLocalization(new RequestLocalizationOptions()
     .AddSupportedUICultures(supportedCultures));
 
 app.UseRouting();
-
+// CORS İznini Aktif Ediyoruz:
+app.UseCors("AllowAll");
 app.UseAuthorization();
 
 app.MapRazorPages();

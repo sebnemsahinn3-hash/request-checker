@@ -7,5 +7,9 @@
 
   "RequestMessages:SuccessMessage": "Operation completed successfully.",
 
-  "Validation:CountInvalid": "Count cannot be negative, it must be 0 or greater."
+  "Validation:CountInvalid": "Count cannot be negative, it must be 0 or greater.",
+  "Validation:CountTooLarge": "For security reasons, a maximum of 1000 records can be deleted at once.",
+  "Validation:CountRequired": "When delete-all is not selected, specifying Count is required.",
+  "Validation:CountNullWhenIsAllDelete": "When delete-all is selected, the Count field must be left empty.",
+  "Validation:IsAllDeleteRequired": "The IsAllDelete field cannot be empty, it must be true or false."
 }

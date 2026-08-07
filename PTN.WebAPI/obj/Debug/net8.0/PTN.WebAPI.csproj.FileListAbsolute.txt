@@ -123,3 +123,4 @@ C:\Users\sebne\source\repos\PTN.WebAPI\PTN.WebAPI\bin\Debug\net8.0\AutoMapper.Ex
 C:\Users\sebne\source\repos\PTN.WebAPI\PTN.WebAPI\bin\Debug\net8.0\Resources\en.json
 C:\Users\sebne\source\repos\PTN.WebAPI\PTN.WebAPI\bin\Debug\net8.0\Resources\tr.json
 C:\Users\sebne\source\repos\PTN.WebAPI\PTN.WebAPI\bin\Debug\net8.0\FluentValidation.dll
+C:\Users\sebne\source\repos\PTN.WebAPI\PTN.WebAPI\obj\Debug\net8.0\PTN.WebAPI.sourcelink.json
