@@ -6,22 +6,26 @@ using PTN.WebAPI.Repositories;
 using PTN.WebAPI.Services;
 
 var builder = WebApplication.CreateBuilder(args);
-// Arayüzün (UI) Backend'e bağlanabilmesi için CORS İzni veriyoruz:
-builder.Services.AddCors(options =>
-{
-    options.AddPolicy("AllowAll", policy =>
-    {
-        policy.AllowAnyOrigin()
-              .AllowAnyMethod()
-              .AllowAnyHeader();
-    });
-});
+
 
 // Add services to the container.
 builder.Services.AddRazorPages();
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
-// Swagger XML Dokümantasyon Ayarı
+
+// CORS Yapılandırması (appsettings.json içerisinden AllowedOrigins okunur)
+var allowedOrigins = builder.Configuration.GetSection("AllowedOrigins").Get<string[]>() ?? Array.Empty<string>();
+
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowConfiguredOrigins", policy =>
+    {
+        policy.WithOrigins(allowedOrigins)
+            .AllowAnyHeader()
+            .AllowAnyMethod();
+    });
+});
+ // Swagger XML Dokümantasyon Ayarı
 builder.Services.AddSwaggerGen(c =>
 {
     var xmlFile = $"{System.Reflection.Assembly.GetExecutingAssembly().GetName().Name}.xml";
@@ -86,7 +90,7 @@ app.UseRequestLocalization(new RequestLocalizationOptions()
 
 app.UseRouting();
 // CORS İznini Aktif Ediyoruz:
-app.UseCors("AllowAll");
+app.UseCors("AllowConfiguredOrigins");
 app.UseAuthorization();
 
 app.MapRazorPages();
