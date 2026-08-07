@@ -71,6 +71,32 @@
   },
   {
     "ContainingType": "PTN.WebAPI.Controllers.RequestLogController",
+    "Method": "CreateLogAsync",
+    "RelativePath": "api/RequestLog",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "createDto",
+        "Type": "PTN.WebAPI.Dtos.RequestLogCreateDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "PTN.WebAPI.Dtos.RequestLogDto",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "PTN.WebAPI.Controllers.RequestLogController",
     "Method": "DeleteLogsAsync",
     "RelativePath": "api/RequestLog",
     "HttpMethod": "DELETE",
@@ -80,6 +106,27 @@
       {
         "Name": "deleteDto",
         "Type": "PTN.WebAPI.Dtos.RequestLogDeleteDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "PTN.WebAPI.Controllers.RequestLogController",
+    "Method": "UpdateLogAsync",
+    "RelativePath": "api/RequestLog/{id}",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      },
+      {
+        "Name": "updateDto",
+        "Type": "PTN.WebAPI.Dtos.RequestLogUpdateDto",
         "IsRequired": true
       }
     ],
