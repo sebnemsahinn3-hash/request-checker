@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.SignalR;
+using Microsoft.AspNetCore.SignalR;
+using Microsoft.Extensions.Localization;
 using PTN.WebAPI.Constants;
 using PTN.WebAPI.Hubs;
 using System;
@@ -15,15 +16,21 @@ namespace PTN.WebAPI
         public static HealthMetrics Metrics { get; } = new HealthMetrics();
         private readonly IServiceProvider _serviceProvider;
         private readonly IHubContext<HealthHub> _hubContext;
+        private readonly IStringLocalizer<HealthCheckBackgroundService> _localizer;
 
         // Son 3 Dakika Sağlıksız Durum Takip Değişkenleri
         private DateTime? _unhealthyStartTime = null;
         private bool _alertSent = false;
 
-        public HealthCheckBackgroundService(IServiceProvider serviceProvider, IHubContext<HealthHub> hubContext)
+        public HealthCheckBackgroundService(
+            IServiceProvider serviceProvider, 
+            IHubContext<HealthHub> hubContext,
+            IStringLocalizer<HealthCheckBackgroundService> localizer)
         {
             _serviceProvider = serviceProvider;
             _hubContext = hubContext;
+            _localizer = localizer;
+
             httpClient.Timeout = TimeSpan.FromSeconds(5);
             if (!httpClient.DefaultRequestHeaders.Contains(RequestConstants.DefaultRequestHeaders))
             {
@@ -53,8 +60,8 @@ namespace PTN.WebAPI
 
                 await JobMetodu(targetUrl);
                 await Task.Delay(5000, stoppingToken);
-                
-                // Demo / Test Amacıyla Takip (5 saniyede bir kontrol edilir)
+
+                // 3 Dakikalık kritik eşik takibi
                 await CheckThreeMinuteThresholdAsync();
             }
         }
@@ -65,13 +72,16 @@ namespace PTN.WebAPI
             {
                 var duration = DateTime.Now - _unhealthyStartTime.Value;
 
-                // Son 3 dakika boyunca kesintisiz yanıt alınamadıysa SignalR canlı bildirimi fırlatır!
+                // Son 3 dakika boyunca kesintisiz yanıt alınamadıysa Localized SignalR bildirimi gönder
                 if (duration >= TimeSpan.FromMinutes(3) && !_alertSent)
                 {
+                    string title = _localizer["SignalR:CriticalAlertTitle"].Value;
+                    string message = _localizer["SignalR:CriticalAlertMessage"].Value;
+
                     await _hubContext.Clients.All.SendAsync(
                         "ReceiveCriticalHealthAlert", 
-                        "KRİTİK UYARI: SİSTEM YANIT VERMİYOR!", 
-                        "API servisi son 3 dakikadır kesintisiz yanıt vermiyor! Lütfen sunucuyu kontrol edin."
+                        title, 
+                        message
                     );
                     _alertSent = true;
                 }
