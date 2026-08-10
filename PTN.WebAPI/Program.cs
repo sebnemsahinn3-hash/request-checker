@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using PTN.WebAPI;
 using PTN.WebAPI.Extensions;
 using PTN.WebAPI.Mapping;
@@ -36,12 +36,9 @@ builder.Services.AddSwaggerGen(c =>
 // PostgreSQL DbContext Kaydı
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
-// Redis Önbellek (Distributed Cache) Servis Kaydı
-builder.Services.AddStackExchangeRedisCache(options =>
-{
-    options.Configuration = builder.Configuration.GetConnectionString("Redis");
-    options.InstanceName = "PTN_HealthCheck_";
-});
+
+// Önbellek (Distributed Cache) Servis Kaydı: Yerel MemoryCache Fallback Aktif!
+builder.Services.AddDistributedMemoryCache();
 
 // BackgroundService, Service ve Repository Kayıtları
 builder.Services.AddHostedService<HealthCheckBackgroundService>();
