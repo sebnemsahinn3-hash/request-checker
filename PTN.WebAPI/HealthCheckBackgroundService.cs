@@ -75,8 +75,8 @@ namespace PTN.WebAPI
                 // Son 3 dakika boyunca kesintisiz yanıt alınamadıysa Localized SignalR bildirimi gönder
                 if (duration >= TimeSpan.FromMinutes(3) && !_alertSent)
                 {
-                    string title = _localizer["SignalR:CriticalAlertTitle"].Value;
-                    string message = _localizer["SignalR:CriticalAlertMessage"].Value;
+                    string title = _localizer[SignalRConstants.CriticalAlertTitle].Value;
+                    string message = _localizer[SignalRConstants.CriticalAlertMessage].Value;
 
                     await _hubContext.Clients.All.SendAsync(
                         "ReceiveCriticalHealthAlert", 
