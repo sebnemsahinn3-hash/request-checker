@@ -1,5 +1,11 @@
-﻿using PTN.WebAPI.Constants;
+﻿using Microsoft.AspNetCore.SignalR;
+using PTN.WebAPI.Constants;
+using PTN.WebAPI.Hubs;
+using System;
 using System.Diagnostics;
+using System.Net.Http;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace PTN.WebAPI
 {
@@ -8,14 +14,16 @@ namespace PTN.WebAPI
         private static readonly HttpClient httpClient = new HttpClient();
         public static HealthMetrics Metrics { get; } = new HealthMetrics();
         private readonly IServiceProvider _serviceProvider;
+        private readonly IHubContext<HealthHub> _hubContext;
 
-        private static DateTime lastWriteTime = DateTime.Now;
-        private static readonly TimeSpan fileWriteInterval = TimeSpan.FromMinutes(5);
-        private static readonly int maxLogCount = 1000;
+        // Son 3 Dakika Sağlıksız Durum Takip Değişkenleri
+        private DateTime? _unhealthyStartTime = null;
+        private bool _alertSent = false;
 
-        public HealthCheckBackgroundService(IServiceProvider serviceProvider)
+        public HealthCheckBackgroundService(IServiceProvider serviceProvider, IHubContext<HealthHub> hubContext)
         {
             _serviceProvider = serviceProvider;
+            _hubContext = hubContext;
             httpClient.Timeout = TimeSpan.FromSeconds(5);
             if (!httpClient.DefaultRequestHeaders.Contains(RequestConstants.DefaultRequestHeaders))
             {
@@ -45,6 +53,28 @@ namespace PTN.WebAPI
 
                 await JobMetodu(targetUrl);
                 await Task.Delay(5000, stoppingToken);
+                
+                // Demo / Test Amacıyla Takip (5 saniyede bir kontrol edilir)
+                await CheckThreeMinuteThresholdAsync();
+            }
+        }
+
+        private async Task CheckThreeMinuteThresholdAsync()
+        {
+            if (_unhealthyStartTime.HasValue)
+            {
+                var duration = DateTime.Now - _unhealthyStartTime.Value;
+
+                // Son 3 dakika boyunca kesintisiz yanıt alınamadıysa SignalR canlı bildirimi fırlatır!
+                if (duration >= TimeSpan.FromMinutes(3) && !_alertSent)
+                {
+                    await _hubContext.Clients.All.SendAsync(
+                        "ReceiveCriticalHealthAlert", 
+                        "KRİTİK UYARI: SİSTEM YANIT VERMİYOR!", 
+                        "API servisi son 3 dakikadır kesintisiz yanıt vermiyor! Lütfen sunucuyu kontrol edin."
+                    );
+                    _alertSent = true;
+                }
             }
         }
 
@@ -108,23 +138,26 @@ namespace PTN.WebAPI
                 isHealthy = false;
             }
 
-            if (isHealthy) Metrics.HealthyCount++;
-            else Metrics.UnhealthyCount++;
+            if (isHealthy)
+            {
+                Metrics.HealthyCount++;
+                // Sistem normale dönünce 3 dakika takibini sıfırla
+                _unhealthyStartTime = null;
+                _alertSent = false;
+            }
+            else
+            {
+                Metrics.UnhealthyCount++;
+                // İlk kez hataya düştüyse zamanı kaydet
+                if (!_unhealthyStartTime.HasValue)
+                {
+                    _unhealthyStartTime = DateTime.Now;
+                }
+            }
 
             Metrics.LastUpdate = DateTime.Now;
 
-            string tekLogBlok = string.Format(
-                RequestConstants.RequestLog,
-                url,
-                requestParams,
-                requestBody,
-                responseBody,
-                timing,
-                statusCode,
-                message
-            );
-
-            // 1. PostgreSQL Veritabanına Repository üzerinden kayıt basma
+            // PostgreSQL Veritabanı Kaydı
             try
             {
                 using (var scope = _serviceProvider.CreateScope())
@@ -146,49 +179,14 @@ namespace PTN.WebAPI
                             _ => PTN.WebAPI.Enums.StatusCodes.InternalServerError
                         }),
                         Message = message,
-                        CreatedAt = DateTime.UtcNow // Tarih hatasını çözen kritik ekleme!
+                        CreatedAt = DateTime.UtcNow
                     });
                 }
             }
             catch (Exception ex)
             {
                 Console.WriteLine($"DB Kayıt Hatası: {ex.Message}");
-                // 2. Belleğe (RAM) Ekleme ve Maksimum 1000 Kayıt Sınırı
-                lock (Metrics.RecentLogs)
-                {
-                    Metrics.RecentLogs.Add(tekLogBlok);
-
-                    // 1000 kaydı aşarsa en eskiyi siler!
-                    if (Metrics.RecentLogs.Count > maxLogCount)
-                    {
-                        Metrics.RecentLogs.RemoveAt(0);
-                    }
-                }
             }
-        }
-
-        private void DosyalaraBas()
-        {
-            try
-            {
-                lock (Metrics.RecentLogs)
-                {
-                    File.WriteAllText(RequestConstants.LogFilePath, string.Join(Environment.NewLine, Metrics.RecentLogs) + Environment.NewLine);
-                }
-
-                string ozetIcerik = string.Format(
-                    RequestConstants.SummaryTemplate,
-                    Metrics.LastUpdate,
-                    Metrics.TotalRequests,
-                    Metrics.Success200Count,
-                    Metrics.HealthyCount,
-                    Metrics.UnhealthyCount,
-                    Metrics.HealthPercentage
-                );
-
-                File.WriteAllText(RequestConstants.SummaryFilePath, ozetIcerik);
-            }
-            catch { }
         }
     }
 }
