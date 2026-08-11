@@ -1,6 +1,8 @@
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Localization;
 using PTN.WebAPI.Constants;
+using PTN.WebAPI.EventBus;
+using PTN.WebAPI.Events;
 using PTN.WebAPI.Hubs;
 using System;
 using System.Diagnostics;
@@ -17,6 +19,7 @@ namespace PTN.WebAPI
         private readonly IServiceProvider _serviceProvider;
         private readonly IHubContext<HealthHub> _hubContext;
         private readonly IStringLocalizer<HealthCheckBackgroundService> _localizer;
+        private readonly IRabbitMQPublisher _publisher;
 
         // Son 3 Dakika Sağlıksız Durum Takip Değişkenleri
         private DateTime? _unhealthyStartTime = null;
@@ -25,11 +28,13 @@ namespace PTN.WebAPI
         public HealthCheckBackgroundService(
             IServiceProvider serviceProvider, 
             IHubContext<HealthHub> hubContext,
-            IStringLocalizer<HealthCheckBackgroundService> localizer)
+            IStringLocalizer<HealthCheckBackgroundService> localizer,
+            IRabbitMQPublisher publisher)
         {
             _serviceProvider = serviceProvider;
             _hubContext = hubContext;
             _localizer = localizer;
+            _publisher = publisher;
 
             httpClient.Timeout = TimeSpan.FromSeconds(5);
             if (!httpClient.DefaultRequestHeaders.Contains(RequestConstants.DefaultRequestHeaders))
@@ -72,17 +77,27 @@ namespace PTN.WebAPI
             {
                 var duration = DateTime.Now - _unhealthyStartTime.Value;
 
-                // Son 3 dakika boyunca kesintisiz yanıt alınamadıysa Localized SignalR bildirimi gönder
+                // Son 3 dakika boyunca kesintisiz yanıt alınamadıysa Localized SignalR ve RabbitMQ bildirimi gönder
                 if (duration >= TimeSpan.FromMinutes(3) && !_alertSent)
                 {
                     string title = _localizer[SignalRConstants.CriticalAlertTitle].Value;
                     string message = _localizer[SignalRConstants.CriticalAlertMessage].Value;
 
+                    // 1. SignalR Canlı Bildirimi (Arayüz İçin)
                     await _hubContext.Clients.All.SendAsync(
                         "ReceiveCriticalHealthAlert", 
                         title, 
                         message
                     );
+
+                    // 2. RabbitMQ Olayı (Veritabanındaki Kullanıcılara Mail Atmak İçin)
+                    await _publisher.PublishCriticalAlertAsync(new CriticalHealthAlertEvent
+                    {
+                        Title = title,
+                        Message = message,
+                        AlertTime = DateTime.UtcNow
+                    });
+
                     _alertSent = true;
                 }
             }

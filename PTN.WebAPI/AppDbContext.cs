@@ -11,6 +11,7 @@ namespace PTN.WebAPI
 
         public DbSet<RequestLogEntity> RequestLogs { get; set; }
         public DbSet<ApiSettings> ApiSettings { get; set; }
+        public DbSet<UserEntity> Users { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

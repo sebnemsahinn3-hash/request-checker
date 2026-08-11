@@ -11,9 +11,10 @@ namespace PTN.WebAPI.Mapping
     public class MappingProfile : Profile
     {
         public MappingProfile()
-        
-        {CreateMap<RequestLogEntity, RequestCacheModel>();
+        {
+            CreateMap<RequestLogEntity, RequestCacheModel>();
             CreateMap<RequestCacheModel, RequestLogDto>();
+            
             CreateMap<RequestLogEntity, RequestLogDto>()
                 .ForMember(dest => dest.Message, opt => opt.MapFrom((src, dest, destMember, context) =>
                 {
@@ -40,6 +41,11 @@ namespace PTN.WebAPI.Mapping
             CreateMap<RequestLogDto, RequestLogEntity>();
             CreateMap<RequestLogCreateDto, RequestLogEntity>();
             CreateMap<RequestLogUpdateDto, RequestLogEntity>();
+
+            // Kullanıcı (User) Mappings
+            CreateMap<UserEntity, UserDto>();
+            CreateMap<UserCreateDto, UserEntity>();
+            CreateMap<UserUpdateDto, UserEntity>();
         }
     }
 }

@@ -1,21 +1,57 @@
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
 using PTN.WebAPI;
+using PTN.WebAPI.EventBus;
 using PTN.WebAPI.Extensions;
 using PTN.WebAPI.Hubs;
 using PTN.WebAPI.Mapping;
+using PTN.WebAPI.Models;
 using PTN.WebAPI.Repositories;
 using PTN.WebAPI.Services;
-using PTN.WebAPI.Hubs;
+using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
-
 
 // Add services to the container.
 builder.Services.AddRazorPages();
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
+
 // SignalR Canlı Bildirim Servisi Kaydı
 builder.Services.AddSignalR();
+
+// Kullanıcı Yönetimi ve Auth Bağımlılık Kayıtları
+builder.Services.AddScoped<IUserRepository, EfUserRepository>();
+builder.Services.AddTransient<IUserService, UserService>();
+builder.Services.AddTransient<IAuthService, AuthService>();
+
+// RabbitMQ ve SMTP E-Posta Servis Kayıtları
+builder.Services.AddSingleton<IRabbitMQPublisher, RabbitMQPublisher>();
+builder.Services.AddTransient<IEmailService, EmailService>();
+builder.Services.AddHostedService<RabbitMQConsumer>();
+
+// JWT Bearer Kimlik Doğrulama (Authentication) Yapılandırması
+var jwtSettings = new JwtSettings();
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+})
+.AddJwtBearer(options =>
+{
+    options.TokenValidationParameters = new TokenValidationParameters
+    {
+        ValidateIssuer = true,
+        ValidateAudience = true,
+        ValidateLifetime = true,
+        ValidateIssuerSigningKey = true,
+        ValidIssuer = jwtSettings.Issuer,
+        ValidAudience = jwtSettings.Audience,
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings.SecretKey))
+    };
+});
 
 // CORS Yapılandırması (appsettings.json içerisinden AllowedOrigins okunur)
 var allowedOrigins = builder.Configuration.GetSection("AllowedOrigins").Get<string[]>() ?? Array.Empty<string>();
@@ -29,12 +65,41 @@ builder.Services.AddCors(options =>
             .AllowAnyMethod();
     });
 });
- // Swagger XML Dokümantasyon Ayarı
+
+// Swagger XML Dokümantasyon ve JWT Bearer Kilit Butonu Ayarı
 builder.Services.AddSwaggerGen(c =>
 {
     var xmlFile = $"{System.Reflection.Assembly.GetExecutingAssembly().GetName().Name}.xml";
     var xmlPath = System.IO.Path.Combine(AppContext.BaseDirectory, xmlFile);
     c.IncludeXmlComments(xmlPath);
+
+    // Swagger'a JWT Authorize kilit butonunu ekliyoruz
+    c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+    {
+        Description = "JWT Token değerinizi girin (Örnek: Bearer eyJhbGciOi...)",
+        Name = "Authorization",
+        In = ParameterLocation.Header,
+        Type = SecuritySchemeType.ApiKey,
+        Scheme = "Bearer"
+    });
+
+    c.AddSecurityRequirement(new OpenApiSecurityRequirement()
+    {
+        {
+            new OpenApiSecurityScheme
+            {
+                Reference = new OpenApiReference
+                {
+                    Type = ReferenceType.SecurityScheme,
+                    Id = "Bearer"
+                },
+                Scheme = "oauth2",
+                Name = "Bearer",
+                In = ParameterLocation.Header
+            },
+            new List<string>()
+        }
+    });
 });
 
 // PostgreSQL DbContext Kaydı
@@ -98,11 +163,13 @@ app.UseRequestLocalization(new RequestLocalizationOptions()
 app.UseRouting();
 // CORS İznini Aktif Ediyoruz:
 app.UseCors("AllowConfiguredOrigins");
+
+// JWT Authentication ve Authorization Middleware Sırası
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapRazorPages();
 app.MapHub<HealthHub>("/hubs/health");
 app.MapControllers();
-
 
 app.Run();

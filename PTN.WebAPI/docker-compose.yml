@@ -11,9 +11,11 @@ services:
     environment:
       - ConnectionStrings__DefaultConnection=Host=postgres_db;Port=5432;Database=PTNHealthDb;Username=postgres;Password=postgres
       - ConnectionStrings__Redis=redis_cache:6379
+      - RabbitMQ__Host=rabbitmq_broker
     depends_on:
       - postgres_db
       - redis_cache
+      - rabbitmq_broker
 
   postgres_db:
     image: postgres:16-alpine
@@ -32,6 +34,13 @@ services:
     container_name: ptn_redis
     ports:
       - "6379:6379"
+
+  rabbitmq_broker:
+    image: rabbitmq:3-management-alpine
+    container_name: ptn_rabbitmq
+    ports:
+      - "5672:5672"
+      - "15672:15672"
 
 volumes:
   postgres_data:

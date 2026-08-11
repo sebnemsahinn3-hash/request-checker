@@ -68,5 +68,17 @@
         <member name="M:PTN.WebAPI.Migrations.UpdateStatusCodeToInt.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
             <inheritdoc />
         </member>
+        <member name="T:PTN.WebAPI.Migrations.AddUserEntity">
+            <inheritdoc />
+        </member>
+        <member name="M:PTN.WebAPI.Migrations.AddUserEntity.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:PTN.WebAPI.Migrations.AddUserEntity.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:PTN.WebAPI.Migrations.AddUserEntity.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
+            <inheritdoc />
+        </member>
     </members>
 </doc>
