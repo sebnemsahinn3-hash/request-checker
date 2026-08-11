@@ -1,4 +1,4 @@
-﻿using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
 using System.Net;
@@ -23,7 +23,7 @@ namespace PTN.WebAPI.Services
                 var smtpHost = _configuration["Smtp:Host"] ?? "smtp.gmail.com";
                 var smtpPort = int.Parse(_configuration["Smtp:Port"] ?? "587");
                 var smtpUser = _configuration["Smtp:User"] ?? "info@ptnhealth.com";
-                var smtpPass = _configuration["Smtp:Password"] ?? "secretpassword";
+                var smtpPass = _configuration["Smtp:Password"] ?? "";
 
                 using var client = new SmtpClient(smtpHost, smtpPort)
                 {
@@ -33,7 +33,7 @@ namespace PTN.WebAPI.Services
 
                 var mailMessage = new MailMessage
                 {
-                    From = new MailAddress(smtpUser, "PTN Health Monitor"),
+                    From = new MailAddress(smtpUser, "PTN Health Monitor Alert"),
                     Subject = subject,
                     Body = body,
                     IsBodyHtml = true
@@ -41,13 +41,20 @@ namespace PTN.WebAPI.Services
 
                 mailMessage.To.Add(toEmail);
 
-                // SMTP mail gönderimi (Dev ortamında loglanır)
-                Console.WriteLine($"[SMTP E-POSTA GÖNDERİLDİ] Alıcı: {toEmail} | Konu: {subject}");
-                await Task.CompletedTask;
+                // Eğer Gmail uygulama şifresi girilmişse gerçek SMTP iletimi yapılır
+                if (!string.IsNullOrEmpty(smtpPass))
+                {
+                    await client.SendMailAsync(mailMessage);
+                    Console.WriteLine($"[GMAIL SMTP GERÇEK E-POSTA İLETİLDİ] Alıcı: {toEmail} | Konu: {subject}");
+                }
+                else
+                {
+                    Console.WriteLine($"[GMAIL SMTP UYARISI] Alıcı: {toEmail} | Konu: {subject} (appsettings.json dosyasına Gmail Uygulama Şifresi eklenince E-Posta gerçek mail kutusuna düşer)");
+                }
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"E-Posta Gönderim Hatası: {ex.Message}");
+                Console.WriteLine($"[GMAIL SMTP HATA BİLDİRİMİ]: {ex.Message}");
             }
         }
 
