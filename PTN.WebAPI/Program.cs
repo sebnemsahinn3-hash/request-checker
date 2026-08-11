@@ -135,6 +135,9 @@ app.UseSwaggerUI(c =>
     c.InjectStylesheet("../swagger-custom.css?v=999");
 });
 
+// Ana adrese (/) gelindiğinde otomatik olarak /swagger adresine yönlendir:
+app.MapGet("/", () => Results.Redirect("/swagger"));
+
 // VERİTABANI OTOMATİK MIGRATION UYGULAMA
 using (var scope = app.Services.CreateScope())
 {
