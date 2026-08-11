@@ -1,4 +1,5 @@
 C:\Users\sebne\source\repos\PTN.WebAPI\PTN.WebAPI\publish\PTN.WebAPI.exe
+C:\Users\sebne\source\repos\PTN.WebAPI\PTN.WebAPI\publish\publish\publish\web.config
 C:\Users\sebne\source\repos\PTN.WebAPI\PTN.WebAPI\publish\publish\web.config
 C:\Users\sebne\source\repos\PTN.WebAPI\PTN.WebAPI\publish\appsettings.Development.json
 C:\Users\sebne\source\repos\PTN.WebAPI\PTN.WebAPI\publish\appsettings.json
@@ -7,6 +8,13 @@ C:\Users\sebne\source\repos\PTN.WebAPI\PTN.WebAPI\publish\publish\appsettings.js
 C:\Users\sebne\source\repos\PTN.WebAPI\PTN.WebAPI\publish\publish\PTN.WebAPI.deps.json
 C:\Users\sebne\source\repos\PTN.WebAPI\PTN.WebAPI\publish\publish\PTN.WebAPI.runtimeconfig.json
 C:\Users\sebne\source\repos\PTN.WebAPI\PTN.WebAPI\publish\publish\PTN.WebAPI.staticwebassets.endpoints.json
+C:\Users\sebne\source\repos\PTN.WebAPI\PTN.WebAPI\publish\publish\publish\appsettings.Development.json
+C:\Users\sebne\source\repos\PTN.WebAPI\PTN.WebAPI\publish\publish\publish\appsettings.json
+C:\Users\sebne\source\repos\PTN.WebAPI\PTN.WebAPI\publish\publish\publish\PTN.WebAPI.deps.json
+C:\Users\sebne\source\repos\PTN.WebAPI\PTN.WebAPI\publish\publish\publish\PTN.WebAPI.runtimeconfig.json
+C:\Users\sebne\source\repos\PTN.WebAPI\PTN.WebAPI\publish\publish\publish\PTN.WebAPI.staticwebassets.endpoints.json
+C:\Users\sebne\source\repos\PTN.WebAPI\PTN.WebAPI\publish\publish\publish\Resources\en.json
+C:\Users\sebne\source\repos\PTN.WebAPI\PTN.WebAPI\publish\publish\publish\Resources\tr.json
 C:\Users\sebne\source\repos\PTN.WebAPI\PTN.WebAPI\publish\publish\Resources\en.json
 C:\Users\sebne\source\repos\PTN.WebAPI\PTN.WebAPI\publish\publish\Resources\tr.json
 C:\Users\sebne\source\repos\PTN.WebAPI\PTN.WebAPI\publish\Resources\en.json

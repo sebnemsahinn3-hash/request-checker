@@ -1,4 +1,6 @@
 using Microsoft.AspNetCore.SignalR;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Localization;
 using PTN.WebAPI.Constants;
 using PTN.WebAPI.EventBus;
@@ -6,6 +8,7 @@ using PTN.WebAPI.Events;
 using PTN.WebAPI.Hubs;
 using System;
 using System.Diagnostics;
+using System.Linq;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
@@ -47,27 +50,39 @@ namespace PTN.WebAPI
         {
             while (!stoppingToken.IsCancellationRequested)
             {
-                string targetUrl = RequestConstants.BaseUrl;
-
                 try
                 {
-                    using (var scope = _serviceProvider.CreateScope())
+                    string targetUrl = RequestConstants.BaseUrl;
+
+                    try
                     {
-                        var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-                        var apiSetting = dbContext.ApiSettings.FirstOrDefault();
-                        if (apiSetting != null && !string.IsNullOrEmpty(apiSetting.Url))
+                        using (var scope = _serviceProvider.CreateScope())
                         {
-                            targetUrl = apiSetting.Url;
+                            var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+                            var apiSetting = dbContext.ApiSettings.FirstOrDefault();
+                            if (apiSetting != null && !string.IsNullOrEmpty(apiSetting.Url))
+                            {
+                                targetUrl = apiSetting.Url;
+                            }
                         }
                     }
+                    catch { }
+
+                    await JobMetodu(targetUrl);
+                    await Task.Delay(5000, stoppingToken);
+
+                    // 3 Dakikalık kritik eşik takibi
+                    await CheckThreeMinuteThresholdAsync();
                 }
-                catch { }
-
-                await JobMetodu(targetUrl);
-                await Task.Delay(5000, stoppingToken);
-
-                // 3 Dakikalık kritik eşik takibi
-                await CheckThreeMinuteThresholdAsync();
+                catch (OperationCanceledException)
+                {
+                    // Uygulama kapanırken fırlatılan iptal istisnasını sessizce yakala
+                    break;
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"BackgroundService Döngü Uyarısı: {ex.Message}");
+                }
             }
         }
 
@@ -210,7 +225,7 @@ namespace PTN.WebAPI
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"DB Kayıt Hatası: {ex.Message}");
+                Console.WriteLine($"DB Kayıt Uyarısı: {ex.Message}");
             }
         }
     }

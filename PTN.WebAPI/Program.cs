@@ -128,14 +128,12 @@ app.UseRequestLocalization();
 // Statik dosyaları (wwwroot/swagger-custom.css) okumak için Build sonrası en üste alıyoruz:
 app.UseStaticFiles();
 
-if (app.Environment.IsDevelopment())
+// Swagger hem yerel ortamda hem de Docker ortamında her zaman aktif:
+app.UseSwagger();
+app.UseSwaggerUI(c =>
 {
-    app.UseSwagger();
-    app.UseSwaggerUI(c =>
-    {
-        c.InjectStylesheet("../swagger-custom.css?v=999");// Bir üst klasördeki CSS yolunu verir!
-    });
-}
+    c.InjectStylesheet("../swagger-custom.css?v=999");
+});
 
 // VERİTABANI OTOMATİK MIGRATION UYGULAMA
 using (var scope = app.Services.CreateScope())

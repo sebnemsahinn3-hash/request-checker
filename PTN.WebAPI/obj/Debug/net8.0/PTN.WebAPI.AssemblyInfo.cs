@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("PTN.WebAPI")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+1f68a356fa87024075b61cc321c53895d6310a31")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+6f7bcb53972b1a88ff09199bde89a9125c130c8d")]
 [assembly: System.Reflection.AssemblyProductAttribute("PTN.WebAPI")]
 [assembly: System.Reflection.AssemblyTitleAttribute("PTN.WebAPI")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

@@ -148,3 +148,11 @@ C:\Users\sebne\source\repos\PTN.WebAPI\PTN.WebAPI\bin\Release\net8.0\Microsoft.I
 C:\Users\sebne\source\repos\PTN.WebAPI\PTN.WebAPI\bin\Release\net8.0\RabbitMQ.Client.dll
 C:\Users\sebne\source\repos\PTN.WebAPI\PTN.WebAPI\bin\Release\net8.0\System.Formats.Asn1.dll
 C:\Users\sebne\source\repos\PTN.WebAPI\PTN.WebAPI\bin\Release\net8.0\System.IdentityModel.Tokens.Jwt.dll
+C:\Users\sebne\source\repos\PTN.WebAPI\PTN.WebAPI\bin\Release\net8.0\publish\publish\web.config
+C:\Users\sebne\source\repos\PTN.WebAPI\PTN.WebAPI\bin\Release\net8.0\publish\publish\appsettings.Development.json
+C:\Users\sebne\source\repos\PTN.WebAPI\PTN.WebAPI\bin\Release\net8.0\publish\publish\appsettings.json
+C:\Users\sebne\source\repos\PTN.WebAPI\PTN.WebAPI\bin\Release\net8.0\publish\publish\PTN.WebAPI.deps.json
+C:\Users\sebne\source\repos\PTN.WebAPI\PTN.WebAPI\bin\Release\net8.0\publish\publish\PTN.WebAPI.runtimeconfig.json
+C:\Users\sebne\source\repos\PTN.WebAPI\PTN.WebAPI\bin\Release\net8.0\publish\publish\PTN.WebAPI.staticwebassets.endpoints.json
+C:\Users\sebne\source\repos\PTN.WebAPI\PTN.WebAPI\bin\Release\net8.0\publish\publish\Resources\en.json
+C:\Users\sebne\source\repos\PTN.WebAPI\PTN.WebAPI\bin\Release\net8.0\publish\publish\Resources\tr.json
