@@ -127,15 +127,15 @@ builder.Services.Configure<RequestLocalizationOptions>(options =>
 builder.Services.AddAutoMapper(typeof(MappingProfile));
 
 var app = builder.Build();
+
 app.UseRequestLocalization();
-// Statik dosyaları (wwwroot/swagger-custom.css) okumak için Build sonrası en üste alıyoruz:
 app.UseStaticFiles();
 
-// Swagger hem yerel ortamda hem de Docker ortamında her zaman aktif:
+// Swagger Middleware Yapılandırması
 app.UseSwagger();
 app.UseSwaggerUI(c =>
 {
-    c.InjectStylesheet("../swagger-custom.css?v=999");
+    c.InjectStylesheet("/swagger-custom.css");
 });
 
 // Ana adrese (/) gelindiğinde otomatik olarak /swagger adresine yönlendir:
@@ -156,7 +156,7 @@ if (!app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-app.UseStaticFiles();
+
 // Postman ve Tarayıcıdan gelen Accept-Language (en/tr) header'ını otomatik yakalama:
 var supportedCultures = new[] { "tr-TR", "tr", "en-US", "en" };
 app.UseRequestLocalization(new RequestLocalizationOptions()
