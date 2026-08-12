@@ -1,10 +1,9 @@
-﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http;
 using System;
 
 namespace PTN.WebAPI.Constants
 {
     public static class RequestConstants
-
     {
         public const string BaseUrl = "https://ventral-vivan-brinkless.ngrok-free.dev/api/gtfs/check";
         
@@ -36,9 +35,8 @@ namespace PTN.WebAPI.Constants
         {
             private const string Prefix = nameof(RequestMessages);
             public const string isSuccessStatusMessage = $"{Prefix}:SuccessMessage";
-            public const string ServerRespondedMessage = "Sunucudan yanıt döndü.";
-            public const string TimeoutMessage = " istek zaman aşımı. ";
+            public const string ServerRespondedMessage = $"{Prefix}:ServerRespondedMessage";
+            public const string TimeoutMessage = $"{Prefix}:TimeoutMessage";
         }
-    
     }
 }

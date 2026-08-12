@@ -6,6 +6,8 @@
   "StatusCodes:05": "Sunucu İçi Hata Oluştu!",
 
   "RequestMessages:SuccessMessage": "İşlem başarıyla tamamlandı.",
+  "RequestMessages:ServerRespondedMessage": "Sunucudan yanıt döndü.",
+  "RequestMessages:TimeoutMessage": "İstek zaman aşımına uğradı.",
 
   "Validation:CountInvalid": "Silinecek adet (Count) eksi (-) bir değer olamaz, 0 veya 0'dan büyük olmalıdır.",
   "Validation:CountTooLarge": "Güvenlik sebebiyle tek seferde en fazla 1000 kayıt silinebilir.",

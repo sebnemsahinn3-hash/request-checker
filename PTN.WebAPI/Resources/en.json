@@ -6,6 +6,8 @@
   "StatusCodes:05": "Internal Server Error",
 
   "RequestMessages:SuccessMessage": "Operation completed successfully.",
+  "RequestMessages:ServerRespondedMessage": "Response returned from server.",
+  "RequestMessages:TimeoutMessage": "Request timed out.",
 
   "Validation:CountInvalid": "Count cannot be negative, it must be 0 or greater.",
   "Validation:CountTooLarge": "For security reasons, a maximum of 1000 records can be deleted at once.",
