@@ -7,9 +7,13 @@ namespace PTN.WebAPI.Services
 {
     public interface IRequestService
     {
+        Task<PagedResultDto<RequestLogDto>> GetPagedLogsAsync(
+            RequestLogQueryDto query,
+            CancellationToken cancellationToken = default);
         Task<List<RequestLogDto>> GetAllLogsAsync(CancellationToken cancellationToken = default);
         Task<RequestLogDto> CreateLogAsync(RequestLogCreateDto dto);
         Task<bool> UpdateLogAsync(int id, RequestLogUpdateDto dto);
         Task DeleteLogsAsync(RequestLogDeleteDto dto);
+        
     }
 }

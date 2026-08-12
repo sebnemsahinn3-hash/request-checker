@@ -10,7 +10,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-
+using System.Linq;
 namespace PTN.WebAPI.Services
 {
     public class RequestService : IRequestService
@@ -32,6 +32,45 @@ namespace PTN.WebAPI.Services
             _cache = cache;
         }
 
+   
+        public async Task<PagedResultDto<RequestLogDto>> GetPagedLogsAsync(
+            RequestLogQueryDto query,
+            CancellationToken cancellationToken = default)
+        {
+            var allLogs = await GetAllLogsAsync(cancellationToken);
+
+            var filteredLogs = allLogs.ApplyFilters(query);
+
+            var page = Math.Max(
+                query.Page,
+                RequestConstants.Query.FirstPage);
+
+            var pageSize = query.PageSize <= 0
+                ? RequestConstants.Query.DefaultPageSize
+                : Math.Min(
+                    query.PageSize,
+                    RequestConstants.Query.MaxPageSize);
+
+            var totalCount = filteredLogs.Count();
+
+            var items = filteredLogs
+                .ApplySorting(query)
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .ToList();
+
+            var totalPages = (int)Math.Ceiling(
+                totalCount / (double)pageSize);
+
+            return new PagedResultDto<RequestLogDto>
+            {
+                Page = page,
+                PageSize = pageSize,
+                TotalCount = totalCount,
+                TotalPages = totalPages,
+                Items = items
+            };
+        }
         public async Task<List<RequestLogDto>> GetAllLogsAsync(CancellationToken cancellationToken = default)
         {
             // Extension metodu kullanarak Cache-First (Önce Cache'e Bak) mantığını 1 satıra düşürdük!

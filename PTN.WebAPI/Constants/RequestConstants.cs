@@ -31,6 +31,25 @@ namespace PTN.WebAPI.Constants
         public const string SummaryFilePath = "ozet_rapor.txt";
         public const string DefaultValue = "-";
         public const string DefaultHeaderValue = "true";
+        public static class Query
+        {
+            public const string AllStatus = "ALL";
+            public const string SuccessStatus = "200";
+            public const string ClientErrorStatus = "400";
+            public const string ServerErrorStatus = "500";
+
+            public const string SortById = "id";
+            public const string SortByUrl = "url";
+            public const string SortByStatusCode = "statuscode";
+            public const string SortByCreatedAt = "createdat";
+
+            public const string Ascending = "asc";
+            public const string Descending = "desc";
+
+            public const int FirstPage = 1;
+            public const int DefaultPageSize = 50;
+            public const int MaxPageSize = 100;
+        }
         public static class RequestMessages
         {
             private const string Prefix = nameof(RequestMessages);
