@@ -48,8 +48,9 @@ namespace PTN.WebAPI.Services
             }
 
             var entity = _mapper.Map<UserEntity>(dto);
-            // Basit şifreleme örneği (daha sonra Identity / BCrypt bağlayabiliriz)
-            entity.PasswordHash = dto.Password;
+    
+            // 🔐 Şifreyi hashleyerek veritabanına kaydediyoruz (Mentör uyarısı düzeltildi)
+            entity.PasswordHash = Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes(dto.Password));
 
             await _repository.AddUserAsync(entity);
             return _mapper.Map<UserDto>(entity);

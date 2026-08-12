@@ -17,7 +17,7 @@ namespace PTN.WebAPI.Controllers
         }
 
         [HttpPost("login")]
-        public async Task<IActionResult> Login([FromBody] LoginDto dto)
+        public async Task<ActionResult<TokenResponseDto>> Login([FromBody] LoginDto dto)
         {
             var result = await _authService.LoginAsync(dto);
             if (result == null)

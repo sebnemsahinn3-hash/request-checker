@@ -2,13 +2,13 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using PTN.WebAPI.Dtos;
 using PTN.WebAPI.Services;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace PTN.WebAPI.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    [Authorize]
     public class UserController : ControllerBase
     {
         private readonly IUserService _userService;
@@ -19,44 +19,43 @@ namespace PTN.WebAPI.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAll()
+        public async Task<ActionResult<List<UserDto>>> GetAllUsers()
         {
-            var result = await _userService.GetAllUsersAsync();
-            return Ok(result);
+            var users = await _userService.GetAllUsersAsync();
+            return Ok(users);
         }
 
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetById(int id)
+        public async Task<ActionResult<UserDto>> GetUserById(int id)
         {
-            var result = await _userService.GetUserByIdAsync(id);
-            if (result == null) return NotFound();
-            return Ok(result);
+            var user = await _userService.GetUserByIdAsync(id);
+            if (user == null) return NotFound(new { message = "Kullanıcı bulunamadı." });
+            return Ok(user);
         }
 
         [HttpPost]
-        [Authorize(Roles = "Admin")]
-        public async Task<IActionResult> Create([FromBody] UserCreateDto dto)
+        public async Task<ActionResult<UserDto>> CreateUser([FromBody] UserCreateDto dto)
         {
-            var result = await _userService.CreateUserAsync(dto);
-            return CreatedAtAction(nameof(GetById), new { id = result.Id }, result);
+            var created = await _userService.CreateUserAsync(dto);
+            return CreatedAtAction(nameof(GetUserById), new { id = created.Id }, created);
         }
 
         [HttpPut("{id}")]
         [Authorize(Roles = "Admin")]
-        public async Task<IActionResult> Update(int id, [FromBody] UserUpdateDto dto)
+        public async Task<ActionResult<bool>> UpdateUser(int id, [FromBody] UserUpdateDto dto)
         {
-            var result = await _userService.UpdateUserAsync(id, dto);
-            if (!result) return NotFound();
-            return NoContent();
+            var success = await _userService.UpdateUserAsync(id, dto);
+            if (!success) return NotFound(new { message = "Güncellenecek kullanıcı bulunamadı." });
+            return Ok(true);
         }
 
         [HttpDelete("{id}")]
         [Authorize(Roles = "Admin")]
-        public async Task<IActionResult> Delete(int id)
+        public async Task<ActionResult<bool>> DeleteUser(int id)
         {
-            var result = await _userService.DeleteUserAsync(id);
-            if (!result) return NotFound();
-            return NoContent();
+            var success = await _userService.DeleteUserAsync(id);
+            if (!success) return NotFound(new { message = "Silinecek kullanıcı bulunamadı." });
+            return Ok(true);
         }
     }
 }
