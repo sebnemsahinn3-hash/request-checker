@@ -4,6 +4,19 @@
         <name>PTN.WebAPI</name>
     </assembly>
     <members>
+        <member name="M:PTN.WebAPI.Controllers.DashboardController.GetSummary(System.String,System.Threading.CancellationToken)">
+            <summary>
+            GET /api/dashboard/summary?range=1h
+            Returns aggregated APM metrics (Throughput, Error Rate, SLA %, Percentiles P50/P95/P99, Slowest Request, Problematic Endpoint)
+            </summary>
+        </member>
+        <!-- Badly formed XML comment ignored for member "M:PTN.WebAPI.Controllers.DashboardController.GetTimeseries(System.String,System.String,System.Threading.CancellationToken)" -->
+        <member name="M:PTN.WebAPI.Controllers.EndpointsController.GetEndpointsHealth(System.String,System.Threading.CancellationToken)">
+            <summary>
+            GET /api/endpoints/health?range=1h
+            Returns health status per API endpoint route
+            </summary>
+        </member>
         <member name="M:PTN.WebAPI.Controllers.HealthController.GetStatus">
             <summary>
             Canlı sistem analiz istatistiklerini ve özet metrikleri döner.
@@ -22,6 +35,12 @@
         <member name="M:PTN.WebAPI.Controllers.HealthController.CheckDatabase(PTN.WebAPI.AppDbContext)">
             <summary>
             PostgreSQL veritabanı bağlantı durumunu ve toplam kayıt sayısını test eder.
+            </summary>
+        </member>
+        <member name="M:PTN.WebAPI.Controllers.LogsStreamController.GetLogStream(System.Threading.CancellationToken)">
+            <summary>
+            GET /api/logs/stream
+            Server-Sent Events (SSE) stream endpoint for live real-time log streaming
             </summary>
         </member>
         <member name="M:PTN.WebAPI.Controllers.RequestLogController.GetAllLogsAsync(System.Threading.CancellationToken)">
@@ -44,6 +63,7 @@
             İstek loglarını DTO parametrelerine göre siler. Sadece Admin yetkisi olanlar silebilir.
             </summary>
         </member>
+        <!-- Badly formed XML comment ignored for member "M:PTN.WebAPI.Controllers.RequestsController.GetRequests(System.String,System.String,System.Int32,System.Int32,System.Threading.CancellationToken)" -->
         <member name="T:PTN.WebAPI.Migrations.InitialCreate">
             <inheritdoc />
         </member>

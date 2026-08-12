@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http;
 using PTN.WebAPI.Models;
 using System;
 using System.IO;
@@ -18,8 +18,9 @@ namespace PTN.WebAPI.Extensions
 
         public async Task InvokeAsync(HttpContext context)
         {
-            // Swagger ve SignalR hub isteklerini pas geç
-            if (context.Request.Path.StartsWithSegments("/swagger") || 
+            // Swagger, SignalR, SSE streams ve CORS OPTIONS preflight isteklerini pas geç
+            if (HttpMethods.IsOptions(context.Request.Method) ||
+                context.Request.Path.StartsWithSegments("/swagger") || 
                 context.Request.Path.StartsWithSegments("/hubs") ||
                 context.Request.Path.StartsWithSegments("/api/logs/stream"))
             {
