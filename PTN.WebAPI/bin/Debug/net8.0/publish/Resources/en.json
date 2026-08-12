@@ -17,5 +17,9 @@
   "SignalR:CriticalAlertMessage": "API service has not responded for the last 3 continuous minutes! Please check the server.",
   "Users:UserNotFound": "The requested user was not found!",
   "Users:EmailAlreadyExists": "This email address is already registered by another user!",
-  "Users:UserCreatedSuccess": "User record created successfully."
+  "Users:UserCreatedSuccess": "User record created successfully.",
+
+  "Auth:Unauthorized": "Unauthorized Access! Please log in to the system.",
+  "Auth:Forbidden": "Forbidden Access! Only the Panel Owner (Admin) can perform this operation.",
+  "Auth:InvalidCredentials": "Invalid email or password!"
 }
