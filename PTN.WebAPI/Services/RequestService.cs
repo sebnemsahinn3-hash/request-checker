@@ -39,7 +39,13 @@ namespace PTN.WebAPI.Services
         {
             var allLogs = await GetAllLogsAsync(cancellationToken);
 
-            var filteredLogs = allLogs.ApplyFilters(query);
+            var filteredLogs = allLogs
+                .AsQueryable()
+                .ApplyDynamicFilter(query.Query);
+
+            filteredLogs = ApplyStatusFilter(
+                filteredLogs,
+                query.Status);
 
             var page = Math.Max(
                 query.Page,
@@ -54,7 +60,9 @@ namespace PTN.WebAPI.Services
             var totalCount = filteredLogs.Count();
 
             var items = filteredLogs
-                .ApplySorting(query)
+                .ApplyDynamicSorting(
+                    query.SortBy,
+                    query.SortDirection)
                 .Skip((page - 1) * pageSize)
                 .Take(pageSize)
                 .ToList();
@@ -69,6 +77,48 @@ namespace PTN.WebAPI.Services
                 TotalCount = totalCount,
                 TotalPages = totalPages,
                 Items = items
+            };
+        }
+        private static IQueryable<RequestLogDto> ApplyStatusFilter(
+            IQueryable<RequestLogDto> logs,
+            string? status)
+        {
+            if (string.IsNullOrWhiteSpace(status) ||
+                string.Equals(
+                    status,
+                    RequestConstants.Query.AllStatus,
+                    StringComparison.OrdinalIgnoreCase))
+            {
+                return logs;
+            }
+
+            var normalizedStatus = status.Trim();
+
+            return normalizedStatus switch
+            {
+                RequestConstants.Query.SuccessStatus =>
+                    logs.Where(log =>
+                        (log.StatusCode >= 200 &&
+                         log.StatusCode < 300) ||
+                        log.StatusCode == 1),
+
+                RequestConstants.Query.ClientErrorStatus =>
+                    logs.Where(log =>
+                        (log.StatusCode >= 400 &&
+                         log.StatusCode < 500) ||
+                        log.StatusCode == 2 ||
+                        log.StatusCode == 3 ||
+                        log.StatusCode == 4),
+
+                RequestConstants.Query.ServerErrorStatus =>
+                    logs.Where(log =>
+                        (log.StatusCode >= 500 &&
+                         log.StatusCode < 600) ||
+                        log.StatusCode == 5),
+
+                _ => logs.ApplyDynamicFilter(
+                    normalizedStatus,
+                    nameof(RequestLogDto.StatusCode))
             };
         }
         public async Task<List<RequestLogDto>> GetAllLogsAsync(CancellationToken cancellationToken = default)
