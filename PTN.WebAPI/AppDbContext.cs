@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using PTN.WebAPI.Entities;
 
 namespace PTN.WebAPI

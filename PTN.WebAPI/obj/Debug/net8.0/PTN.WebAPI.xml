@@ -1,0 +1,96 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>PTN.WebAPI</name>
+    </assembly>
+    <members>
+        <member name="M:PTN.WebAPI.Controllers.HealthController.GetStatus">
+            <summary>
+            Canlı sistem analiz istatistiklerini ve özet metrikleri döner.
+            </summary>
+        </member>
+        <member name="M:PTN.WebAPI.Controllers.HealthController.GetLogs">
+            <summary>
+            Canlı sistem analiz istatistiklerini ve özet metrikleri döner.
+            </summary>
+        </member>
+        <member name="M:PTN.WebAPI.Controllers.HealthController.DownloadLogFileAsync(System.Threading.CancellationToken)">
+            <summary>
+            Analiz loglarını .txt metin dosyası olarak bilgisayara indirir.
+            </summary>
+        </member>
+        <member name="M:PTN.WebAPI.Controllers.HealthController.CheckDatabase(PTN.WebAPI.AppDbContext)">
+            <summary>
+            PostgreSQL veritabanı bağlantı durumunu ve toplam kayıt sayısını test eder.
+            </summary>
+        </member>
+        <member name="M:PTN.WebAPI.Controllers.RequestLogController.GetAllLogsAsync(System.Threading.CancellationToken)">
+            <summary>
+            Veritabanındaki tüm istek loglarını DTO formatında listelemek için kullanılan API.
+            </summary>
+        </member>
+        <member name="M:PTN.WebAPI.Controllers.RequestLogController.CreateLogAsync(PTN.WebAPI.Dtos.RequestLogCreateDto)">
+            <summary>
+            Veritabanına yeni bir istek log kaydı ekler (POST).
+            </summary>
+        </member>
+        <member name="M:PTN.WebAPI.Controllers.RequestLogController.UpdateLogAsync(System.Int32,PTN.WebAPI.Dtos.RequestLogUpdateDto)">
+            <summary>
+            Belirtilen ID'ye sahip istek logunu günceller (PUT).
+            </summary>
+        </member>
+        <member name="M:PTN.WebAPI.Controllers.RequestLogController.DeleteLogsAsync(PTN.WebAPI.Dtos.RequestLogDeleteDto)">
+            <summary>
+            İstek loglarını DTO parametrelerine göre siler (FluentValidation kontrollü).
+            </summary>
+        </member>
+        <member name="T:PTN.WebAPI.Migrations.InitialCreate">
+            <inheritdoc />
+        </member>
+        <member name="M:PTN.WebAPI.Migrations.InitialCreate.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:PTN.WebAPI.Migrations.InitialCreate.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:PTN.WebAPI.Migrations.InitialCreate.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="T:PTN.WebAPI.Migrations.UpdateStatusCodeToInt">
+            <inheritdoc />
+        </member>
+        <member name="M:PTN.WebAPI.Migrations.UpdateStatusCodeToInt.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:PTN.WebAPI.Migrations.UpdateStatusCodeToInt.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:PTN.WebAPI.Migrations.UpdateStatusCodeToInt.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="T:PTN.WebAPI.Migrations.AddUserEntity">
+            <inheritdoc />
+        </member>
+        <member name="M:PTN.WebAPI.Migrations.AddUserEntity.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:PTN.WebAPI.Migrations.AddUserEntity.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:PTN.WebAPI.Migrations.AddUserEntity.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="T:PTN.WebAPI.Migrations.AddAdminUserSeed">
+            <inheritdoc />
+        </member>
+        <member name="M:PTN.WebAPI.Migrations.AddAdminUserSeed.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:PTN.WebAPI.Migrations.AddAdminUserSeed.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:PTN.WebAPI.Migrations.AddAdminUserSeed.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
+            <inheritdoc />
+        </member>
+    </members>
+</doc>

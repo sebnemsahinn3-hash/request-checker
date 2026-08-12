@@ -1,5 +1,6 @@
-﻿using Microsoft.IdentityModel.Tokens;
+using Microsoft.IdentityModel.Tokens;
 using PTN.WebAPI.Dtos;
+using PTN.WebAPI.Entities;
 using PTN.WebAPI.Models;
 using PTN.WebAPI.Repositories;
 using System;
@@ -24,6 +25,22 @@ namespace PTN.WebAPI.Services
         public async Task<TokenResponseDto?> LoginAsync(LoginDto dto)
         {
             var user = await _userRepository.GetUserByEmailAsync(dto.Email);
+
+            // Eğer veritabanında admin@ptn.com yoksa otomatik oluştur ve giriş izni ver
+            if (user == null && dto.Email.Equals("admin@ptn.com", StringComparison.OrdinalIgnoreCase) && dto.Password == "Admin123!")
+            {
+                user = new UserEntity
+                {
+                    FullName = "System Admin",
+                    Email = "admin@ptn.com",
+                    PasswordHash = "Admin123!",
+                    Role = "Admin",
+                    IsActive = true,
+                    CreatedAt = DateTime.UtcNow
+                };
+                await _userRepository.AddUserAsync(user);
+            }
+
             if (user == null || user.PasswordHash != dto.Password || !user.IsActive)
             {
                 return null;
