@@ -1,9 +1,14 @@
 using Microsoft.AspNetCore.SignalR;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Localization;
 using PTN.WebAPI.Constants;
+using PTN.WebAPI.EventBus;
+using PTN.WebAPI.Events;
 using PTN.WebAPI.Hubs;
 using System;
 using System.Diagnostics;
+using System.Linq;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
@@ -17,6 +22,7 @@ namespace PTN.WebAPI
         private readonly IServiceProvider _serviceProvider;
         private readonly IHubContext<HealthHub> _hubContext;
         private readonly IStringLocalizer<HealthCheckBackgroundService> _localizer;
+        private readonly IRabbitMQPublisher _publisher;
 
         // Son 3 Dakika Sağlıksız Durum Takip Değişkenleri
         private DateTime? _unhealthyStartTime = null;
@@ -25,11 +31,13 @@ namespace PTN.WebAPI
         public HealthCheckBackgroundService(
             IServiceProvider serviceProvider, 
             IHubContext<HealthHub> hubContext,
-            IStringLocalizer<HealthCheckBackgroundService> localizer)
+            IStringLocalizer<HealthCheckBackgroundService> localizer,
+            IRabbitMQPublisher publisher)
         {
             _serviceProvider = serviceProvider;
             _hubContext = hubContext;
             _localizer = localizer;
+            _publisher = publisher;
 
             httpClient.Timeout = TimeSpan.FromSeconds(5);
             if (!httpClient.DefaultRequestHeaders.Contains(RequestConstants.DefaultRequestHeaders))
@@ -42,27 +50,39 @@ namespace PTN.WebAPI
         {
             while (!stoppingToken.IsCancellationRequested)
             {
-                string targetUrl = RequestConstants.BaseUrl;
-
                 try
                 {
-                    using (var scope = _serviceProvider.CreateScope())
+                    string targetUrl = RequestConstants.BaseUrl;
+
+                    try
                     {
-                        var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-                        var apiSetting = dbContext.ApiSettings.FirstOrDefault();
-                        if (apiSetting != null && !string.IsNullOrEmpty(apiSetting.Url))
+                        using (var scope = _serviceProvider.CreateScope())
                         {
-                            targetUrl = apiSetting.Url;
+                            var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+                            var apiSetting = dbContext.ApiSettings.FirstOrDefault();
+                            if (apiSetting != null && !string.IsNullOrEmpty(apiSetting.Url))
+                            {
+                                targetUrl = apiSetting.Url;
+                            }
                         }
                     }
+                    catch { }
+
+                    await JobMetodu(targetUrl);
+                    await Task.Delay(5000, stoppingToken);
+
+                    // 3 Dakikalık kritik eşik takibi
+                    await CheckThreeMinuteThresholdAsync();
                 }
-                catch { }
-
-                await JobMetodu(targetUrl);
-                await Task.Delay(5000, stoppingToken);
-
-                // 3 Dakikalık kritik eşik takibi
-                await CheckThreeMinuteThresholdAsync();
+                catch (OperationCanceledException)
+                {
+                    // Uygulama kapanırken fırlatılan iptal istisnasını sessizce yakala
+                    break;
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"BackgroundService Döngü Uyarısı: {ex.Message}");
+                }
             }
         }
 
@@ -72,17 +92,27 @@ namespace PTN.WebAPI
             {
                 var duration = DateTime.Now - _unhealthyStartTime.Value;
 
-                // Son 3 dakika boyunca kesintisiz yanıt alınamadıysa Localized SignalR bildirimi gönder
+                // Son 3 dakika boyunca kesintisiz yanıt alınamadıysa Localized SignalR ve RabbitMQ bildirimi gönder
                 if (duration >= TimeSpan.FromMinutes(3) && !_alertSent)
                 {
                     string title = _localizer[SignalRConstants.CriticalAlertTitle].Value;
                     string message = _localizer[SignalRConstants.CriticalAlertMessage].Value;
 
+                    // 1. SignalR Canlı Bildirimi (Arayüz İçin)
                     await _hubContext.Clients.All.SendAsync(
                         "ReceiveCriticalHealthAlert", 
                         title, 
                         message
                     );
+
+                    // 2. RabbitMQ Olayı (Veritabanındaki Kullanıcılara Mail Atmak İçin)
+                    await _publisher.PublishCriticalAlertAsync(new CriticalHealthAlertEvent
+                    {
+                        Title = title,
+                        Message = message,
+                        AlertTime = DateTime.UtcNow
+                    });
+
                     _alertSent = true;
                 }
             }
@@ -195,7 +225,7 @@ namespace PTN.WebAPI
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"DB Kayıt Hatası: {ex.Message}");
+                Console.WriteLine($"DB Kayıt Uyarısı: {ex.Message}");
             }
         }
     }

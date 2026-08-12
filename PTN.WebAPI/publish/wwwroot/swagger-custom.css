@@ -1,0 +1,134 @@
+﻿/* 1. Global Temiz Arkaplan Beyaz */
+body, .swagger-ui {
+    background-color: #ffffff !important;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif !important;
+}
+
+    /* 2. Üst Çubuk (Topbar) Pembe */
+    .swagger-ui .topbar {
+        background: #ec4899 !important;
+        padding: 12px 0;
+    }
+
+    /* 3. PTN.WebAPI Başlığı Pembe */
+    .swagger-ui .info .title {
+        color: #ec4899 !important;
+        font-weight: 700;
+    }
+
+    /* Rozetler */
+    .swagger-ui .info .version,
+    .swagger-ui .info .oasversion {
+        background-color: #f1f5f9 !important;
+        color: #475569 !important;
+        border: 1px solid #cbd5e1 !important;
+        border-radius: 12px !important;
+        padding: 2px 10px !important;
+        font-weight: 600;
+    }
+
+    /* 4. Health & RequestLog Başlıkları Mavi */
+    .swagger-ui .opblock-tag {
+        color: #3b82f6 !important;
+        border-bottom: 2px solid #e2e8f0 !important;
+        font-weight: 600;
+    }
+
+    /* 5. GET Kartı (Yumuşak Sarı Arka Plan & Pembe Çerçeve) */
+    .swagger-ui .opblock.opblock-get {
+        background: #fefce8 !important;
+        border: 1px solid #f472b6 !important;
+        border-radius: 10px !important;
+    }
+
+        /* 6. GET Butonu Pembe */
+        .swagger-ui .opblock.opblock-get .opblock-summary-method {
+            background: #ec4899 !important;
+            color: #ffffff !important;
+            border-radius: 6px !important;
+            font-weight: bold;
+        }
+
+        /* 7. ENDPOINT YOLU VE AÇIKLAMALARI SİMSİYAH VE BOLD */
+        .swagger-ui .opblock.opblock-get .opblock-summary-path,
+        .swagger-ui .opblock.opblock-get .opblock-summary-path span,
+        .swagger-ui .opblock .opblock-summary-description {
+            color: #0f172a !important;
+            font-weight: bold !important;
+            opacity: 1 !important;
+        }
+
+    /* 8. KART İÇİ - Parameters & Responses Şeridi Pembe */
+    .swagger-ui .opblock .opblock-section-header {
+        background: #ec4899 !important;
+        border-radius: 6px !important;
+    }
+
+        .swagger-ui .opblock .opblock-section-header h4,
+        .swagger-ui .opblock .opblock-section-header h4 span {
+            color: #ffffff !important;
+            font-weight: bold;
+        }
+
+    /* 9. NO PARAMETERS YAZISINI SİMSİYAH YAPMA */
+    .swagger-ui .opblock-description-wrapper p,
+    .swagger-ui .opblock-title_normal {
+        color: #0f172a !important;
+        font-weight: bold !important;
+        opacity: 1 !important;
+    }
+
+    /* 10. ALT BAŞLIKLARI (Curl, Request URL, Response body) CANLI PEMBE YAPMA */
+    .swagger-ui .opblock-body h4,
+    .swagger-ui .opblock-body h5,
+    .swagger-ui .responses-inner h4,
+    .swagger-ui .responses-inner h5,
+    .swagger-ui .response-control-media-type__title,
+    .swagger-ui .curl-command__title {
+        color: #ec4899 !important;
+        font-weight: bold !important;
+        opacity: 1 !important;
+    }
+
+    /* 11. O 4 SİYAH KUTUYU (Curl, Request URL, Response Body, Response Headers) %100 KESİN BEYAZ VE SİMSİYAH YAZILI YAPMA */
+    .swagger-ui .opblock-body pre,
+    .swagger-ui .opblock-body pre *,
+    .swagger-ui .opblock-body code,
+    .swagger-ui .opblock-body code *,
+    .swagger-ui .curl-command,
+    .swagger-ui .curl-command *,
+    .swagger-ui .request-url,
+    .swagger-ui .request-url *,
+    .swagger-ui .responses-wrapper pre,
+    .swagger-ui .responses-wrapper pre *,
+    .swagger-ui .highlight-code,
+    .swagger-ui .highlight-code * {
+        background: #ffffff !important;
+        background-color: #ffffff !important;
+        color: #0f172a !important; /* Tüm JSON ve kod yazıları Simsiyah */
+        border: 1px solid #cbd5e1 !important;
+        border-radius: 8px !important;
+        font-weight: bold !important;
+    }
+
+    /* 12. TABLO YAZILARINI (Code, Details, 200, OK) SİMSİYAH YAPMA */
+    .swagger-ui .response-col_status,
+    .swagger-ui .response-col_description,
+    .swagger-ui .response-col_links,
+    .swagger-ui table.responses-table th,
+    .swagger-ui table.responses-table td,
+    .swagger-ui table.responses-table td * {
+        color: #0f172a !important;
+        font-weight: bold !important;
+        opacity: 1 !important;
+    }
+
+    /* Try it out & Execute Butonları Pembe */
+    .swagger-ui .btn.try-out__btn,
+    .swagger-ui .btn.execute {
+        background: #ec4899 !important;
+        color: #ffffff !important;
+        border: none !important;
+        border-radius: 6px !important;
+        font-weight: bold;
+    }

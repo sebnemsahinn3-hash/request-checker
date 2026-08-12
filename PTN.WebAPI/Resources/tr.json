@@ -6,6 +6,8 @@
   "StatusCodes:05": "Sunucu İçi Hata Oluştu!",
 
   "RequestMessages:SuccessMessage": "İşlem başarıyla tamamlandı.",
+  "RequestMessages:ServerRespondedMessage": "Sunucudan yanıt döndü.",
+  "RequestMessages:TimeoutMessage": "İstek zaman aşımına uğradı.",
 
   "Validation:CountInvalid": "Silinecek adet (Count) eksi (-) bir değer olamaz, 0 veya 0'dan büyük olmalıdır.",
   "Validation:CountTooLarge": "Güvenlik sebebiyle tek seferde en fazla 1000 kayıt silinebilir.",
@@ -14,5 +16,12 @@
   "Validation:IsAllDeleteRequired": "IsAllDelete alanı boş bırakılamaz, true veya false olmalıdır.",
 
   "SignalR:CriticalAlertTitle": "KRİTİK UYARI: SİSTEM YANIT VERMİYOR!",
-  "SignalR:CriticalAlertMessage": "API servisi son 3 dakikadır kesintisiz yanıt vermiyor! Lütfen sunucuyu kontrol edin."
+  "SignalR:CriticalAlertMessage": "API servisi son 3 dakikadır kesintisiz yanıt vermiyor! Lütfen sunucuyu kontrol edin.",
+  "Users:UserNotFound": "Aranan kullanıcı sistemde bulunamadı!",
+  "Users:EmailAlreadyExists": "Bu e-posta adresi zaten başka bir kullanıcı tarafından kullanılıyor!",
+  "Users:UserCreatedSuccess": "Kullanıcı kaydı başarıyla oluşturuldu.",
+
+  "Auth:Unauthorized": "Yetkisiz Erişim! Lütfen sisteme giriş yapın.",
+  "Auth:Forbidden": "Yasaklı Erişim! Bu işlemi sadece Panel Sahibi (Admin) gerçekleştirebilir.",
+  "Auth:InvalidCredentials": "Geçersiz e-posta veya şifre!"
 }

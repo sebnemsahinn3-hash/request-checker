@@ -1,21 +1,80 @@
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Localization;
+using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
 using PTN.WebAPI;
+using PTN.WebAPI.Constants;
+using PTN.WebAPI.EventBus;
 using PTN.WebAPI.Extensions;
 using PTN.WebAPI.Hubs;
 using PTN.WebAPI.Mapping;
+using PTN.WebAPI.Models;
 using PTN.WebAPI.Repositories;
 using PTN.WebAPI.Services;
-using PTN.WebAPI.Hubs;
+using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
-
 
 // Add services to the container.
 builder.Services.AddRazorPages();
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
+
 // SignalR Canlı Bildirim Servisi Kaydı
 builder.Services.AddSignalR();
+
+// Kullanıcı Yönetimi ve Auth Bağımlılık Kayıtları
+builder.Services.AddScoped<IUserRepository, EfUserRepository>();
+builder.Services.AddTransient<IUserService, UserService>();
+builder.Services.AddTransient<IAuthService, AuthService>();
+
+// RabbitMQ ve SMTP E-Posta Servis Kayıtları
+builder.Services.AddSingleton<IRabbitMQPublisher, RabbitMQPublisher>();
+builder.Services.AddTransient<IEmailService, EmailService>();
+builder.Services.AddHostedService<RabbitMQConsumer>();
+
+// JWT Bearer Kimlik Doğrulama (Authentication) Yapılandırması
+var jwtSettings = new JwtSettings();
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+})
+.AddJwtBearer(options =>
+{
+    options.TokenValidationParameters = new TokenValidationParameters
+    {
+        ValidateIssuer = true,
+        ValidateAudience = true,
+        ValidateLifetime = true,
+        ValidateIssuerSigningKey = true,
+        ValidIssuer = jwtSettings.Issuer,
+        ValidAudience = jwtSettings.Audience,
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings.SecretKey))
+    };
+
+    options.Events = new JwtBearerEvents
+    {
+        OnChallenge = async context =>
+        {
+            context.HandleResponse();
+            context.Response.StatusCode = 401;
+            context.Response.ContentType = "application/json; charset=utf-8";
+            var localizer = context.HttpContext.RequestServices.GetRequiredService<IStringLocalizer<Program>>();
+            var message = localizer[AuthConstants.Unauthorized];
+            await context.Response.WriteAsJsonAsync(new { status = 401, message = message.Value });
+        },
+        OnForbidden = async context =>
+        {
+            context.Response.StatusCode = 403;
+            context.Response.ContentType = "application/json; charset=utf-8";
+            var localizer = context.HttpContext.RequestServices.GetRequiredService<IStringLocalizer<Program>>();
+            var message = localizer[AuthConstants.Forbidden];
+            await context.Response.WriteAsJsonAsync(new { status = 403, message = message.Value });
+        }
+    };
+});
 
 // CORS Yapılandırması (appsettings.json içerisinden AllowedOrigins okunur)
 var allowedOrigins = builder.Configuration.GetSection("AllowedOrigins").Get<string[]>() ?? Array.Empty<string>();
@@ -29,12 +88,42 @@ builder.Services.AddCors(options =>
             .AllowAnyMethod();
     });
 });
- // Swagger XML Dokümantasyon Ayarı
+
+// Swagger XML Dokümantasyon ve JWT Bearer Kilit Butonu Ayarı
 builder.Services.AddSwaggerGen(c =>
 {
     var xmlFile = $"{System.Reflection.Assembly.GetExecutingAssembly().GetName().Name}.xml";
     var xmlPath = System.IO.Path.Combine(AppContext.BaseDirectory, xmlFile);
-    c.IncludeXmlComments(xmlPath);
+    if (System.IO.File.Exists(xmlPath))
+    {
+        c.IncludeXmlComments(xmlPath);
+    }
+
+    // Swagger'a JWT Authorize kilit butonunu ekliyoruz
+    c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+    {
+        Name = "Authorization",
+        Type = SecuritySchemeType.Http,
+        Scheme = "bearer",
+        BearerFormat = "JWT",
+        In = ParameterLocation.Header,
+        Description = "JWT Token değerinizi girin (Örnek: Bearer eyJhbGciOi...)"
+    });
+
+    c.AddSecurityRequirement(new OpenApiSecurityRequirement
+    {
+        {
+            new OpenApiSecurityScheme
+            {
+                Reference = new OpenApiReference
+                {
+                    Type = ReferenceType.SecurityScheme,
+                    Id = "Bearer"
+                }
+            },
+            Array.Empty<string>()
+        }
+    });
 });
 
 // PostgreSQL DbContext Kaydı
@@ -59,18 +148,19 @@ builder.Services.Configure<RequestLocalizationOptions>(options =>
 builder.Services.AddAutoMapper(typeof(MappingProfile));
 
 var app = builder.Build();
+
 app.UseRequestLocalization();
-// Statik dosyaları (wwwroot/swagger-custom.css) okumak için Build sonrası en üste alıyoruz:
 app.UseStaticFiles();
 
-if (app.Environment.IsDevelopment())
+// Swagger Middleware Yapılandırması
+app.UseSwagger();
+app.UseSwaggerUI(c =>
 {
-    app.UseSwagger();
-    app.UseSwaggerUI(c =>
-    {
-        c.InjectStylesheet("../swagger-custom.css?v=999");// Bir üst klasördeki CSS yolunu verir!
-    });
-}
+    c.InjectStylesheet("/swagger-custom.css");
+});
+
+// Ana adrese (/) gelindiğinde otomatik olarak /swagger adresine yönlendir:
+app.MapGet("/", () => Results.Redirect("/swagger"));
 
 // VERİTABANI OTOMATİK MIGRATION UYGULAMA
 using (var scope = app.Services.CreateScope())
@@ -87,7 +177,7 @@ if (!app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-app.UseStaticFiles();
+
 // Postman ve Tarayıcıdan gelen Accept-Language (en/tr) header'ını otomatik yakalama:
 var supportedCultures = new[] { "tr-TR", "tr", "en-US", "en" };
 app.UseRequestLocalization(new RequestLocalizationOptions()
@@ -98,11 +188,13 @@ app.UseRequestLocalization(new RequestLocalizationOptions()
 app.UseRouting();
 // CORS İznini Aktif Ediyoruz:
 app.UseCors("AllowConfiguredOrigins");
+
+// JWT Authentication ve Authorization Middleware Sırası
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapRazorPages();
 app.MapHub<HealthHub>("/hubs/health");
 app.MapControllers();
-
 
 app.Run();

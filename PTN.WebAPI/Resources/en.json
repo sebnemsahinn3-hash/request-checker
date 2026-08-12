@@ -6,6 +6,8 @@
   "StatusCodes:05": "Internal Server Error",
 
   "RequestMessages:SuccessMessage": "Operation completed successfully.",
+  "RequestMessages:ServerRespondedMessage": "Response returned from server.",
+  "RequestMessages:TimeoutMessage": "Request timed out.",
 
   "Validation:CountInvalid": "Count cannot be negative, it must be 0 or greater.",
   "Validation:CountTooLarge": "For security reasons, a maximum of 1000 records can be deleted at once.",
@@ -14,5 +16,12 @@
   "Validation:IsAllDeleteRequired": "The IsAllDelete field cannot be empty, it must be true or false.",
 
   "SignalR:CriticalAlertTitle": "CRITICAL ALERT: SYSTEM NOT RESPONDING!",
-  "SignalR:CriticalAlertMessage": "API service has not responded for the last 3 continuous minutes! Please check the server."
+  "SignalR:CriticalAlertMessage": "API service has not responded for the last 3 continuous minutes! Please check the server.",
+  "Users:UserNotFound": "The requested user was not found!",
+  "Users:EmailAlreadyExists": "This email address is already registered by another user!",
+  "Users:UserCreatedSuccess": "User record created successfully.",
+
+  "Auth:Unauthorized": "Unauthorized Access! Please log in to the system.",
+  "Auth:Forbidden": "Forbidden Access! Only the Panel Owner (Admin) can perform this operation.",
+  "Auth:InvalidCredentials": "Invalid email or password!"
 }

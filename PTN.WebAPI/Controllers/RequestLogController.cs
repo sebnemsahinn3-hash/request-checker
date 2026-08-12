@@ -1,4 +1,5 @@
 using FluentValidation;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using PTN.WebAPI.Dtos;
 using PTN.WebAPI.Services;
@@ -42,9 +43,10 @@ namespace PTN.WebAPI.Controllers
         }
 
         /// <summary>
-        /// Belirtilen ID'ye sahip istek logunu günceller (PUT).
+        /// Belirtilen ID'ye sahip istek logunu günceller (PUT). Sadece Admin yetkisi olanlar değiştirebilir.
         /// </summary>
         [HttpPut("{id}")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> UpdateLogAsync(int id, [FromBody] RequestLogUpdateDto updateDto)
         {
             var success = await _requestService.UpdateLogAsync(id, updateDto);
@@ -56,9 +58,10 @@ namespace PTN.WebAPI.Controllers
         }
 
         /// <summary>
-        /// İstek loglarını DTO parametrelerine göre siler (FluentValidation kontrollü).
+        /// İstek loglarını DTO parametrelerine göre siler. Sadece Admin yetkisi olanlar silebilir.
         /// </summary>
         [HttpDelete]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteLogsAsync([FromBody] RequestLogDeleteDto deleteDto)
         {
             var validator = new RequestLogDeleteDtoValidator();
