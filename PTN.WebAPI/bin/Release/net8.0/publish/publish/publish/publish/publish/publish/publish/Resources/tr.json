@@ -17,9 +17,5 @@
   "SignalR:CriticalAlertMessage": "API servisi son 3 dakikadır kesintisiz yanıt vermiyor! Lütfen sunucuyu kontrol edin.",
   "Users:UserNotFound": "Aranan kullanıcı sistemde bulunamadı!",
   "Users:EmailAlreadyExists": "Bu e-posta adresi zaten başka bir kullanıcı tarafından kullanılıyor!",
-  "Users:UserCreatedSuccess": "Kullanıcı kaydı başarıyla oluşturuldu.",
-
-  "Auth:Unauthorized": "Yetkisiz Erişim! Lütfen sisteme giriş yapın.",
-  "Auth:Forbidden": "Yasaklı Erişim! Bu işlemi sadece Panel Sahibi (Admin) gerçekleştirebilir.",
-  "Auth:InvalidCredentials": "Geçersiz e-posta veya şifre!"
+  "Users:UserCreatedSuccess": "Kullanıcı kaydı başarıyla oluşturuldu."
 }

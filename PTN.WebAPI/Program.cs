@@ -1,8 +1,10 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Localization;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using PTN.WebAPI;
+using PTN.WebAPI.Constants;
 using PTN.WebAPI.EventBus;
 using PTN.WebAPI.Extensions;
 using PTN.WebAPI.Hubs;
@@ -50,6 +52,27 @@ builder.Services.AddAuthentication(options =>
         ValidIssuer = jwtSettings.Issuer,
         ValidAudience = jwtSettings.Audience,
         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings.SecretKey))
+    };
+
+    options.Events = new JwtBearerEvents
+    {
+        OnChallenge = async context =>
+        {
+            context.HandleResponse();
+            context.Response.StatusCode = 401;
+            context.Response.ContentType = "application/json; charset=utf-8";
+            var localizer = context.HttpContext.RequestServices.GetRequiredService<IStringLocalizer<Program>>();
+            var message = localizer[AuthConstants.Unauthorized];
+            await context.Response.WriteAsJsonAsync(new { status = 401, message = message.Value });
+        },
+        OnForbidden = async context =>
+        {
+            context.Response.StatusCode = 403;
+            context.Response.ContentType = "application/json; charset=utf-8";
+            var localizer = context.HttpContext.RequestServices.GetRequiredService<IStringLocalizer<Program>>();
+            var message = localizer[AuthConstants.Forbidden];
+            await context.Response.WriteAsJsonAsync(new { status = 403, message = message.Value });
+        }
     };
 });
 
