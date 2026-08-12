@@ -23,7 +23,7 @@ namespace PTN.WebAPI.Controllers
         /// Returns aggregated APM metrics (Throughput, Error Rate, SLA %, Percentiles P50/P95/P99, Slowest Request, Problematic Endpoint)
         /// </summary>
         [HttpGet("summary")]
-        public async Task<IActionResult> GetSummary([FromQuery] string range = "1h", CancellationToken cancellationToken = default)
+        public async Task<ActionResult<object>> GetSummary([FromQuery] string range = "1h", CancellationToken cancellationToken = default)
         {
             var logs = await _requestService.GetAllLogsAsync(cancellationToken);
             var now = DateTime.UtcNow;
@@ -76,7 +76,7 @@ namespace PTN.WebAPI.Controllers
         /// Returns timeseries data for traffic bar chart, error rate line, and P95 latency line
         /// </summary>
         [HttpGet("timeseries")]
-        public async Task<IActionResult> GetTimeseries([FromQuery] string range = "1h", [FromQuery] string bucket = "5m", CancellationToken cancellationToken = default)
+        public async Task<ActionResult<object>> GetTimeseries([FromQuery] string range = "1h", [FromQuery] string bucket = "5m", CancellationToken cancellationToken = default)
         {
             var logs = await _requestService.GetAllLogsAsync(cancellationToken);
             var now = DateTime.UtcNow;

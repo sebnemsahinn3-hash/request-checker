@@ -47,14 +47,14 @@ namespace PTN.WebAPI.Controllers
         /// </summary>
         [HttpPut("{id}")]
         [Authorize(Roles = "Admin")]
-        public async Task<IActionResult> UpdateLogAsync(int id, [FromBody] RequestLogUpdateDto updateDto)
+        public async Task<ActionResult<bool>> UpdateLogAsync(int id, [FromBody] RequestLogUpdateDto updateDto)
         {
             var success = await _requestService.UpdateLogAsync(id, updateDto);
             if (!success)
             {
                 return NotFound(new { message = "Güncellenecek kayıt bulunamadı." });
             }
-            return Ok(new { message = "İstek logu başarıyla güncellendi." });
+            return Ok(true);
         }
 
         /// <summary>
@@ -62,7 +62,7 @@ namespace PTN.WebAPI.Controllers
         /// </summary>
         [HttpDelete]
         [Authorize(Roles = "Admin")]
-        public async Task<IActionResult> DeleteLogsAsync([FromBody] RequestLogDeleteDto deleteDto)
+        public async Task<ActionResult<bool>> DeleteLogsAsync([FromBody] RequestLogDeleteDto deleteDto)
         {
             var validator = new RequestLogDeleteDtoValidator();
             var validationResult = validator.Validate(deleteDto);

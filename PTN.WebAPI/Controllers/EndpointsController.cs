@@ -23,7 +23,7 @@ namespace PTN.WebAPI.Controllers
         /// Returns health status per API endpoint route
         /// </summary>
         [HttpGet("health")]
-        public async Task<IActionResult> GetEndpointsHealth([FromQuery] string range = "1h", CancellationToken cancellationToken = default)
+        public async Task<ActionResult<object>> GetEndpointsHealth([FromQuery] string range = "1h", CancellationToken cancellationToken = default)
         {
             var logs = await _requestService.GetAllLogsAsync(cancellationToken);
 

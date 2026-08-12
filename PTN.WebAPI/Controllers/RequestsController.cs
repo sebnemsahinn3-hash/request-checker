@@ -25,7 +25,7 @@ namespace PTN.WebAPI.Controllers
         /// Paginated, filtered request logs endpoint
         /// </summary>
         [HttpGet]
-        public async Task<IActionResult> GetRequests(
+        public async Task<ActionResult<object>> GetRequests(
             [FromQuery] string status = null,
             [FromQuery] string query = null,
             [FromQuery] int page = 1,

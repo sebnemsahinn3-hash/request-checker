@@ -188,6 +188,7 @@ app.UseRequestLocalization(new RequestLocalizationOptions()
 app.UseRouting();
 // CORS İznini Aktif Ediyoruz:
 app.UseCors("AllowConfiguredOrigins");
+app.UseMiddleware<PTN.WebAPI.Extensions.ApiResponseMiddleware>();
 
 // JWT Authentication ve Authorization Middleware Sırası
 app.UseAuthentication();

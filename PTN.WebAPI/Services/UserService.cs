@@ -1,4 +1,4 @@
-﻿using AutoMapper;
+using AutoMapper;
 using Microsoft.Extensions.Localization;
 using PTN.WebAPI.Constants;
 using PTN.WebAPI.Dtos;
@@ -49,8 +49,12 @@ namespace PTN.WebAPI.Services
 
             var entity = _mapper.Map<UserEntity>(dto);
     
-            // 🔐 Şifreyi hashleyerek veritabanına kaydediyoruz (Mentör uyarısı düzeltildi)
-            entity.PasswordHash = Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes(dto.Password));
+            // 🔐 Şifreyi SHA256 kriptografik hash ile şifreleyerek veritabanına kaydediyoruz
+            using (var sha256 = System.Security.Cryptography.SHA256.Create())
+            {
+                var bytes = sha256.ComputeHash(System.Text.Encoding.UTF8.GetBytes(dto.Password));
+                entity.PasswordHash = Convert.ToBase64String(bytes);
+            }
 
             await _repository.AddUserAsync(entity);
             return _mapper.Map<UserDto>(entity);
