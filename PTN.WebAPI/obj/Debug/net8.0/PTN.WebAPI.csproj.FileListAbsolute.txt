@@ -25,7 +25,6 @@ C:\Users\sebne\source\repos\PTN.WebAPI\PTN.WebAPI\obj\Debug\net8.0\staticwebasse
 C:\Users\sebne\source\repos\PTN.WebAPI\PTN.WebAPI\obj\Debug\net8.0\staticwebassets.build.json.cache
 C:\Users\sebne\source\repos\PTN.WebAPI\PTN.WebAPI\obj\Debug\net8.0\staticwebassets.development.json
 C:\Users\sebne\source\repos\PTN.WebAPI\PTN.WebAPI\obj\Debug\net8.0\staticwebassets.build.endpoints.json
-C:\Users\sebne\source\repos\PTN.WebAPI\PTN.WebAPI\obj\Debug\net8.0\staticwebassets.upToDateCheck.txt
 C:\Users\sebne\source\repos\PTN.WebAPI\PTN.WebAPI\obj\Debug\net8.0\PTN.WebAPI.dll
 C:\Users\sebne\source\repos\PTN.WebAPI\PTN.WebAPI\obj\Debug\net8.0\refint\PTN.WebAPI.dll
 C:\Users\sebne\source\repos\PTN.WebAPI\PTN.WebAPI\obj\Debug\net8.0\PTN.WebAPI.pdb
@@ -124,3 +123,9 @@ C:\Users\sebne\source\repos\PTN.WebAPI\PTN.WebAPI\bin\Debug\net8.0\Resources\en.
 C:\Users\sebne\source\repos\PTN.WebAPI\PTN.WebAPI\bin\Debug\net8.0\Resources\tr.json
 C:\Users\sebne\source\repos\PTN.WebAPI\PTN.WebAPI\bin\Debug\net8.0\FluentValidation.dll
 C:\Users\sebne\source\repos\PTN.WebAPI\PTN.WebAPI\obj\Debug\net8.0\PTN.WebAPI.sourcelink.json
+C:\Users\sebne\source\repos\PTN.WebAPI\PTN.WebAPI\bin\Debug\net8.0\Microsoft.Extensions.Caching.Abstractions.dll
+C:\Users\sebne\source\repos\PTN.WebAPI\PTN.WebAPI\bin\Debug\net8.0\Microsoft.Extensions.Caching.StackExchangeRedis.dll
+C:\Users\sebne\source\repos\PTN.WebAPI\PTN.WebAPI\bin\Debug\net8.0\Microsoft.Extensions.Primitives.dll
+C:\Users\sebne\source\repos\PTN.WebAPI\PTN.WebAPI\bin\Debug\net8.0\Pipelines.Sockets.Unofficial.dll
+C:\Users\sebne\source\repos\PTN.WebAPI\PTN.WebAPI\bin\Debug\net8.0\StackExchange.Redis.dll
+C:\Users\sebne\source\repos\PTN.WebAPI\PTN.WebAPI\bin\Debug\net8.0\System.Diagnostics.DiagnosticSource.dll

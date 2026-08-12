@@ -1,0 +1,37 @@
+version: '3.8'
+
+services:
+  webapi:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: ptn_webapi
+    ports:
+      - "5160:5160"
+    environment:
+      - ConnectionStrings__DefaultConnection=Host=postgres_db;Port=5432;Database=PTNHealthDb;Username=postgres;Password=postgres
+      - ConnectionStrings__Redis=redis_cache:6379
+    depends_on:
+      - postgres_db
+      - redis_cache
+
+  postgres_db:
+    image: postgres:16-alpine
+    container_name: ptn_postgres
+    environment:
+      POSTGRES_DB: PTNHealthDb
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  redis_cache:
+    image: redis:7-alpine
+    container_name: ptn_redis
+    ports:
+      - "6379:6379"
+
+volumes:
+  postgres_data:

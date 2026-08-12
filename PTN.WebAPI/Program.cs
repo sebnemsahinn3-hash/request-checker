@@ -1,9 +1,11 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using PTN.WebAPI;
 using PTN.WebAPI.Extensions;
+using PTN.WebAPI.Hubs;
 using PTN.WebAPI.Mapping;
 using PTN.WebAPI.Repositories;
 using PTN.WebAPI.Services;
+using PTN.WebAPI.Hubs;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -12,6 +14,8 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddRazorPages();
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
+// SignalR Canlı Bildirim Servisi Kaydı
+builder.Services.AddSignalR();
 
 // CORS Yapılandırması (appsettings.json içerisinden AllowedOrigins okunur)
 var allowedOrigins = builder.Configuration.GetSection("AllowedOrigins").Get<string[]>() ?? Array.Empty<string>();
@@ -36,6 +40,9 @@ builder.Services.AddSwaggerGen(c =>
 // PostgreSQL DbContext Kaydı
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+// Önbellek (Distributed Cache) Servis Kaydı: Yerel MemoryCache Fallback Aktif!
+builder.Services.AddDistributedMemoryCache();
 
 // BackgroundService, Service ve Repository Kayıtları
 builder.Services.AddHostedService<HealthCheckBackgroundService>();
@@ -94,6 +101,8 @@ app.UseCors("AllowConfiguredOrigins");
 app.UseAuthorization();
 
 app.MapRazorPages();
+app.MapHub<HealthHub>("/hubs/health");
 app.MapControllers();
+
 
 app.Run();

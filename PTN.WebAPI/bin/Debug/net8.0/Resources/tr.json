@@ -11,5 +11,8 @@
   "Validation:CountTooLarge": "Güvenlik sebebiyle tek seferde en fazla 1000 kayıt silinebilir.",
   "Validation:CountRequired": "Tümünü silme seçilmediğinde silinecek adet (Count) girilmesi zorunludur.",
   "Validation:CountNullWhenIsAllDelete": "Tümünü silme seçildiğinde silinecek adet (Count) alanı boş bırakılmalıdır.",
-  "Validation:IsAllDeleteRequired": "IsAllDelete alanı boş bırakılamaz, true veya false olmalıdır."
+  "Validation:IsAllDeleteRequired": "IsAllDelete alanı boş bırakılamaz, true veya false olmalıdır.",
+
+  "SignalR:CriticalAlertTitle": "KRİTİK UYARI: SİSTEM YANIT VERMİYOR!",
+  "SignalR:CriticalAlertMessage": "API servisi son 3 dakikadır kesintisiz yanıt vermiyor! Lütfen sunucuyu kontrol edin."
 }
