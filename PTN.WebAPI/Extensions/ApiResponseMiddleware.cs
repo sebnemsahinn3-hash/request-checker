@@ -76,7 +76,8 @@ namespace PTN.WebAPI.Extensions
                 var jsonOptions = new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase };
                 var finalJson = JsonSerializer.Serialize(wrappedResponse, jsonOptions);
 
-                context.Response.ContentType = "application/json";
+                context.Response.Headers.Remove("Content-Length");
+                context.Response.ContentType = "application/json; charset=utf-8";
                 await context.Response.WriteAsync(finalJson);
             }
             catch (Exception ex)

@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc;
 using PTN.WebAPI.Dtos;
 using PTN.WebAPI.Services;
 using System.Threading.Tasks;
@@ -17,14 +17,14 @@ namespace PTN.WebAPI.Controllers
         }
 
         [HttpPost("login")]
-        public async Task<ActionResult<TokenResponseDto>> Login([FromBody] LoginDto dto)
+        public async Task<TokenResponseDto> Login([FromBody] LoginDto dto)
         {
             var result = await _authService.LoginAsync(dto);
             if (result == null)
             {
-                return Unauthorized(new { message = "Geçersiz e-posta veya şifre!" });
+                throw new System.UnauthorizedAccessException("Geçersiz e-posta veya şifre!");
             }
-            return Ok(result);
+            return result;
         }
     }
 }

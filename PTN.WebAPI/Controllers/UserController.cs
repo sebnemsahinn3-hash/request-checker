@@ -19,43 +19,41 @@ namespace PTN.WebAPI.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<List<UserDto>>> GetAllUsers()
+        public async Task<List<UserDto>> GetAllUsers()
         {
-            var users = await _userService.GetAllUsersAsync();
-            return Ok(users);
+            return await _userService.GetAllUsersAsync();
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<UserDto>> GetUserById(int id)
+        public async Task<UserDto?> GetUserById(int id)
         {
             var user = await _userService.GetUserByIdAsync(id);
-            if (user == null) return NotFound(new { message = "Kullanıcı bulunamadı." });
-            return Ok(user);
+            if (user == null) throw new System.Collections.Generic.KeyNotFoundException("Kullanıcı bulunamadı.");
+            return user;
         }
 
         [HttpPost]
-        public async Task<ActionResult<UserDto>> CreateUser([FromBody] UserCreateDto dto)
+        public async Task<UserDto> CreateUser([FromBody] UserCreateDto dto)
         {
-            var created = await _userService.CreateUserAsync(dto);
-            return CreatedAtAction(nameof(GetUserById), new { id = created.Id }, created);
+            return await _userService.CreateUserAsync(dto);
         }
 
         [HttpPut("{id}")]
         [Authorize(Roles = "Admin")]
-        public async Task<ActionResult<bool>> UpdateUser(int id, [FromBody] UserUpdateDto dto)
+        public async Task<bool> UpdateUser(int id, [FromBody] UserUpdateDto dto)
         {
             var success = await _userService.UpdateUserAsync(id, dto);
-            if (!success) return NotFound(new { message = "Güncellenecek kullanıcı bulunamadı." });
-            return Ok(true);
+            if (!success) throw new System.Collections.Generic.KeyNotFoundException("Güncellenecek kullanıcı bulunamadı.");
+            return true;
         }
 
         [HttpDelete("{id}")]
         [Authorize(Roles = "Admin")]
-        public async Task<ActionResult<bool>> DeleteUser(int id)
+        public async Task<bool> DeleteUser(int id)
         {
             var success = await _userService.DeleteUserAsync(id);
-            if (!success) return NotFound(new { message = "Silinecek kullanıcı bulunamadı." });
-            return Ok(true);
+            if (!success) throw new System.Collections.Generic.KeyNotFoundException("Silinecek kullanıcı bulunamadı.");
+            return true;
         }
     }
 }
