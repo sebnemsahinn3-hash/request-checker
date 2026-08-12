@@ -36,12 +36,12 @@
         </member>
         <member name="M:PTN.WebAPI.Controllers.RequestLogController.UpdateLogAsync(System.Int32,PTN.WebAPI.Dtos.RequestLogUpdateDto)">
             <summary>
-            Belirtilen ID'ye sahip istek logunu günceller (PUT).
+            Belirtilen ID'ye sahip istek logunu günceller (PUT). Sadece Admin yetkisi olanlar değiştirebilir.
             </summary>
         </member>
         <member name="M:PTN.WebAPI.Controllers.RequestLogController.DeleteLogsAsync(PTN.WebAPI.Dtos.RequestLogDeleteDto)">
             <summary>
-            İstek loglarını DTO parametrelerine göre siler (FluentValidation kontrollü).
+            İstek loglarını DTO parametrelerine göre siler. Sadece Admin yetkisi olanlar silebilir.
             </summary>
         </member>
         <member name="T:PTN.WebAPI.Migrations.InitialCreate">
