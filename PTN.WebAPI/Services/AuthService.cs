@@ -8,6 +8,8 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Identity;
+using System.Security.Cryptography;
 
 namespace PTN.WebAPI.Services
 {
@@ -16,9 +18,15 @@ namespace PTN.WebAPI.Services
         private readonly IUserRepository _userRepository;
         private readonly JwtSettings _jwtSettings;
 
-        public AuthService(IUserRepository userRepository)
+        private readonly IPasswordHasher<UserEntity>
+            _passwordHasher;
+
+        public AuthService(
+            IUserRepository userRepository,
+            IPasswordHasher<UserEntity> passwordHasher)
         {
             _userRepository = userRepository;
+            _passwordHasher = passwordHasher;
             _jwtSettings = new JwtSettings();
         }
 
@@ -26,24 +34,55 @@ namespace PTN.WebAPI.Services
         {
             var user = await _userRepository.GetUserByEmailAsync(dto.Email);
 
-            // Eğer veritabanında admin@ptn.com yoksa otomatik oluştur ve giriş izni ver
-            if (user == null && dto.Email.Equals("admin@ptn.com", StringComparison.OrdinalIgnoreCase) && dto.Password == "Admin123!")
-            {
-                user = new UserEntity
-                {
-                    FullName = "System Admin",
-                    Email = "admin@ptn.com",
-                    PasswordHash = "Admin123!",
-                    Role = "Admin",
-                    IsActive = true,
-                    CreatedAt = DateTime.UtcNow
-                };
-                await _userRepository.AddUserAsync(user);
-            }
 
-            if (user == null || user.PasswordHash != dto.Password || !user.IsActive)
+
+
+            if (user == null || !user.IsActive)
             {
                 return null;
+            }
+
+            PasswordVerificationResult verificationResult;
+
+            try
+            {
+                verificationResult =
+                    _passwordHasher.VerifyHashedPassword(
+                        user,
+                        user.PasswordHash,
+                        dto.Password);
+            }
+            catch (FormatException)
+            {
+                // Eski düz metin veya SHA256 kayıtları
+                // aşağıdaki legacy kontrolünde doğrulanacak.
+                verificationResult =
+                    PasswordVerificationResult.Failed;
+            }
+            var isLegacyPassword =
+                verificationResult ==
+                PasswordVerificationResult.Failed &&
+                VerifyLegacyPassword(
+                    user.PasswordHash,
+                    dto.Password);
+
+            if (verificationResult ==
+                PasswordVerificationResult.Failed &&
+                !isLegacyPassword)
+            {
+                return null;
+            }
+
+            if (isLegacyPassword ||
+                verificationResult ==
+                PasswordVerificationResult.SuccessRehashNeeded)
+            {
+                user.PasswordHash =
+                    _passwordHasher.HashPassword(
+                        user,
+                        dto.Password);
+
+                await _userRepository.UpdateUserAsync(user);
             }
 
             var tokenHandler = new JwtSecurityTokenHandler();
@@ -62,7 +101,8 @@ namespace PTN.WebAPI.Services
                 Expires = expiration,
                 Issuer = _jwtSettings.Issuer,
                 Audience = _jwtSettings.Audience,
-                SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
+                SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key),
+                    SecurityAlgorithms.HmacSha256Signature)
             };
 
             var token = tokenHandler.CreateToken(tokenDescriptor);
@@ -74,6 +114,36 @@ namespace PTN.WebAPI.Services
                 FullName = user.FullName,
                 Role = user.Role
             };
+        }
+
+        private static bool VerifyLegacyPassword(
+            string storedPassword,
+            string providedPassword)
+        {
+            // Geçmişte düz metin kaydedilmiş kayıtları
+            // ilk başarılı girişte yeni hash'e yükseltir.
+            if (string.Equals(
+                    storedPassword,
+                    providedPassword,
+                    StringComparison.Ordinal))
+            {
+                return true;
+            }
+
+            // Geçmişte SHA256 ile kaydedilmiş kullanıcıları destekler.
+            var passwordBytes =
+                Encoding.UTF8.GetBytes(providedPassword);
+
+            var hashBytes =
+                SHA256.HashData(passwordBytes);
+
+            var legacyHash =
+                Convert.ToBase64String(hashBytes);
+
+            return string.Equals(
+                storedPassword,
+                legacyHash,
+                StringComparison.Ordinal);
         }
     }
 }

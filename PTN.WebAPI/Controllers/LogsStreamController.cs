@@ -1,10 +1,7 @@
-using Microsoft.AspNetCore.Http;
+
 using Microsoft.AspNetCore.Mvc;
 using PTN.WebAPI.Services;
-using System;
 using System.Text.Json;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace PTN.WebAPI.Controllers
 {
@@ -26,10 +23,9 @@ namespace PTN.WebAPI.Controllers
         [HttpGet]
         public async Task GetLogStream(CancellationToken cancellationToken)
         {
-            Response.Headers.Add("Content-Type", "text/event-stream");
-            Response.Headers.Add("Cache-Control", "no-cache");
-            Response.Headers.Add("Connection", "keep-alive");
-
+            Response.ContentType = "text/event-stream";
+            Response.Headers.CacheControl = "no-cache";
+            Response.Headers.Connection = "keep-alive";
             int lastSeenId = 0;
 
             while (!cancellationToken.IsCancellationRequested)

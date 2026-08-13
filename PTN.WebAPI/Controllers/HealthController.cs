@@ -1,11 +1,9 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Localization;
-using PTN.WebAPI.Constants;
-using System;
-using System.IO;
-using System.Linq;
-using System.Text;
 using System.Threading;
+using PTN.WebAPI.Dtos;
+using PTN.WebAPI.Services;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace PTN.WebAPI.Controllers
 {
@@ -13,80 +11,52 @@ namespace PTN.WebAPI.Controllers
     [Route("api/[controller]")]
     public class HealthController : ControllerBase
     {
-        private readonly IStringLocalizer<HealthController> _localizer;
+        private readonly IHealthService _healthService;
 
-        // Constructor'da Localizer enjekte ediyoruz
-        public HealthController(IStringLocalizer<HealthController> localizer)
+        public HealthController(IHealthService healthService)
         {
-            _localizer = localizer;
+            _healthService = healthService;
         }
         /// <summary>
         /// Canlı sistem analiz istatistiklerini ve özet metrikleri döner.
         /// </summary>
         [HttpGet("status")]
-        public IActionResult GetStatus()
+        public HealthStatusDto GetStatus()
         {
-            var metrics = HealthCheckBackgroundService.Metrics;
-            return Ok(metrics);
+            return _healthService.GetStatus();
         }
         /// <summary>
         /// Canlı sistem analiz istatistiklerini ve özet metrikleri döner.
         /// </summary>
         [HttpGet("logs")]
-        public IActionResult GetLogs()
+        public List<string> GetLogs()
         {
-            var logs = HealthCheckBackgroundService.Metrics.RecentLogs;
-            return Ok(logs);
+            return _healthService.GetLogs();
         }
         /// <summary>
         /// Analiz loglarını .txt metin dosyası olarak bilgisayara indirir.
         /// </summary>
         [HttpGet("download-log")]
-        [HttpGet("DownloadLogFileAsync")]
-        public IActionResult DownloadLogFileAsync(CancellationToken cancellationToken = default)
+        public async Task<FileContentResult> DownloadLogFileAsync(
+            CancellationToken cancellationToken = default)
         {
-            string logContent = "";
+            var logFile = await _healthService.GetLogFileAsync(
+                cancellationToken);
 
-            lock (HealthCheckBackgroundService.Metrics.RecentLogs)
-            {
-                if (HealthCheckBackgroundService.Metrics.RecentLogs.Count > 0)
-                {
-                    logContent = string.Join(Environment.NewLine, HealthCheckBackgroundService.Metrics.RecentLogs) + Environment.NewLine;
-                }
-            }
-
-            if (string.IsNullOrEmpty(logContent))
-            {
-                string filePath = Path.Combine(Directory.GetCurrentDirectory(), RequestConstants.LogFilePath);
-                if (System.IO.File.Exists(filePath))
-                {
-                    logContent = System.IO.File.ReadAllText(filePath);
-                }
-            }
-
-            byte[] fileBytes = Encoding.UTF8.GetBytes(logContent);
-            return File(fileBytes, "text/plain", RequestConstants.LogFilePath);
+            return File(
+                logFile.Content,
+                logFile.ContentType,
+                logFile.FileName);
         }
         /// <summary>
         /// PostgreSQL veritabanı bağlantı durumunu ve toplam kayıt sayısını test eder.
         /// </summary>
         [HttpGet("db-check")]
-        public IActionResult CheckDatabase([FromServices] AppDbContext dbContext)
+        public async Task<DatabaseHealthDto> CheckDatabase(
+            CancellationToken cancellationToken = default)
         {
-            bool isConnected = dbContext.Database.CanConnect();
-            int totalLogCount = dbContext.RequestLogs.Count();
-
-            // Koda sabit metin yazmıyoruz! Dil dosyasındaki key'den çekiyoruz:
-            string message = isConnected
-                ? _localizer["SuccessfullyConnected"]
-                : _localizer["NoConnection"];
-
-            return Ok(new
-            {
-                IsConnected = isConnected,
-                TotalLogCount = totalLogCount,
-                Message = message
-            });
+            return await _healthService.CheckDatabaseAsync(
+                cancellationToken);
         }
     }
 }

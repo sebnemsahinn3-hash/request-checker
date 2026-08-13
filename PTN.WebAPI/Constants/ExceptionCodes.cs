@@ -8,8 +8,7 @@
         public const string CountRequired = "Validation:CountRequired";
         public const string CountNullWhenIsAllDelete = "Validation:CountNullWhenIsAllDelete";
         public const string IsAllDeleteRequired = "Validation:IsAllDeleteRequired";
-
-        // Genel Mesaj Anahtarları
+        public const string ErrorMessage = "RequestMessages:ErrorMessage";
         public const string SuccessMessage = "RequestMessages:SuccessMessage";
     }
 }

@@ -23,5 +23,8 @@
 
   "Auth:Unauthorized": "Yetkisiz Erişim! Lütfen sisteme giriş yapın.",
   "Auth:Forbidden": "Yasaklı Erişim! Bu işlemi sadece Panel Sahibi (Admin) gerçekleştirebilir.",
-  "Auth:InvalidCredentials": "Geçersiz e-posta veya şifre!"
+  "Auth:InvalidCredentials": "Geçersiz e-posta veya şifre!",
+  "Health:SuccessfullyConnected": "Veritabanına başarıyla bağlanıldı.",
+  "Health:NoConnection": "Veritabanı bağlantısı kurulamadı.",
+  "RequestMessages:ErrorMessage": "İşlem sırasında bir hata oluştu."
 }

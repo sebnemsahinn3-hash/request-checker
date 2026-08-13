@@ -12,6 +12,8 @@ services:
       - ConnectionStrings__DefaultConnection=Host=postgres_db;Port=5432;Database=PTNHealthDb;Username=postgres;Password=postgres
       - ConnectionStrings__Redis=redis_cache:6379
       - RabbitMQ__Host=rabbitmq_broker
+      - Smtp__User=${SMTP_USER}
+      - Smtp__Password=${SMTP_PASSWORD}
     depends_on:
       - postgres_db
       - redis_cache
