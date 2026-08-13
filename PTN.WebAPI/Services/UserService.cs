@@ -7,7 +7,7 @@ using PTN.WebAPI.Repositories;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-
+using Microsoft.AspNetCore.Identity;
 namespace PTN.WebAPI.Services
 {
     public class UserService : IUserService
@@ -15,15 +15,19 @@ namespace PTN.WebAPI.Services
         private readonly IUserRepository _repository;
         private readonly IMapper _mapper;
         private readonly IStringLocalizer<UserService> _localizer;
+        private readonly IPasswordHasher<UserEntity>
+            _passwordHasher;
 
         public UserService(
-            IUserRepository repository, 
-            IMapper mapper, 
-            IStringLocalizer<UserService> localizer)
+            IUserRepository repository,
+            IMapper mapper,
+            IStringLocalizer<UserService> localizer,
+            IPasswordHasher<UserEntity> passwordHasher)
         {
             _repository = repository;
             _mapper = mapper;
             _localizer = localizer;
+            _passwordHasher = passwordHasher;
         }
 
         public async Task<List<UserDto>> GetAllUsersAsync()
@@ -49,12 +53,11 @@ namespace PTN.WebAPI.Services
 
             var entity = _mapper.Map<UserEntity>(dto);
     
-            // 🔐 Şifreyi SHA256 kriptografik hash ile şifreleyerek veritabanına kaydediyoruz
-            using (var sha256 = System.Security.Cryptography.SHA256.Create())
-            {
-                var bytes = sha256.ComputeHash(System.Text.Encoding.UTF8.GetBytes(dto.Password));
-                entity.PasswordHash = Convert.ToBase64String(bytes);
-            }
+            // Parolayı ASP.NET Core PasswordHasher ile güvenli biçimde hashliyoruz.
+            entity.PasswordHash =
+                _passwordHasher.HashPassword(
+                    entity,
+                    dto.Password);
 
             await _repository.AddUserAsync(entity);
             return _mapper.Map<UserDto>(entity);

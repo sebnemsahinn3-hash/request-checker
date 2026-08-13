@@ -1,9 +1,13 @@
 using Microsoft.AspNetCore.Http;
-using PTN.WebAPI.Models;
 using System;
 using System.IO;
 using System.Text.Json;
 using System.Threading.Tasks;
+using FluentValidation;
+using System.Linq;
+using Microsoft.Net.Http.Headers;
+using Microsoft.Extensions.Localization;
+using PTN.WebAPI.Constants;
 
 namespace PTN.WebAPI.Extensions
 {
@@ -16,7 +20,9 @@ namespace PTN.WebAPI.Extensions
             _next = next;
         }
 
-        public async Task InvokeAsync(HttpContext context)
+        public async Task InvokeAsync(
+            HttpContext context,
+            IStringLocalizer<ApiResponseMiddleware> localizer)
         {
             // Swagger, SignalR, SSE streams ve CORS OPTIONS preflight isteklerini pas geç
             if (HttpMethods.IsOptions(context.Request.Method) ||
@@ -35,7 +41,20 @@ namespace PTN.WebAPI.Extensions
             try
             {
                 await _next(context);
+                if (context.Response.Headers.ContainsKey(
+                        HeaderNames.ContentDisposition))
+                {
+                    context.Response.Body = originalBodyStream;
 
+                    memoryStream.Seek(
+                        0,
+                        SeekOrigin.Begin);
+
+                    await memoryStream.CopyToAsync(
+                        originalBodyStream);
+
+                    return;
+                }
                 context.Response.Body = originalBodyStream;
                 memoryStream.Seek(0, SeekOrigin.Begin);
 
@@ -63,7 +82,11 @@ namespace PTN.WebAPI.Extensions
                 }
 
                 var isSuccess = statusCode >= 200 && statusCode < 300;
-                var message = isSuccess ? "İşlem başarıyla tamamlandı" : "İşlem sırasında bir hata oluştu";
+                var messageKey = isSuccess
+                    ? ExceptionCodes.SuccessMessage
+                    : ExceptionCodes.ErrorMessage;
+
+                var message = localizer[messageKey].Value;
 
                 var wrappedResponse = new
                 {
@@ -80,7 +103,81 @@ namespace PTN.WebAPI.Extensions
                 context.Response.ContentType = "application/json; charset=utf-8";
                 await context.Response.WriteAsync(finalJson);
             }
-            catch (Exception ex)
+            catch (UnauthorizedAccessException ex)
+            {
+                context.Response.Body = originalBodyStream;
+                context.Response.StatusCode =
+                    StatusCodes.Status401Unauthorized;
+
+                context.Response.ContentType =
+                    "application/json; charset=utf-8";
+
+                context.Response.Headers.Remove(
+                    "Content-Length");
+
+                var errorResponse = new
+                {
+                    message = ex.Message,
+                    success = false,
+                    status = StatusCodes.Status401Unauthorized,
+                    data = (object?)null
+                };
+
+                var finalJson =
+                    JsonSerializer.Serialize(errorResponse);
+
+                await context.Response.WriteAsync(finalJson);
+            }
+            catch (System.Collections.Generic.KeyNotFoundException ex)
+            {
+                context.Response.Body = originalBodyStream;
+                context.Response.StatusCode =
+                    StatusCodes.Status404NotFound;
+
+                context.Response.ContentType =
+                    "application/json; charset=utf-8";
+
+                context.Response.Headers.Remove(
+                    "Content-Length");
+
+                var errorResponse = new
+                {
+                    message = ex.Message,
+                    success = false,
+                    status = StatusCodes.Status404NotFound,
+                    data = (object?)null
+                };
+
+                var finalJson =
+                    JsonSerializer.Serialize(errorResponse);
+
+                await context.Response.WriteAsync(finalJson);
+            }
+            catch (ValidationException ex)
+            {
+                context.Response.Body = originalBodyStream;
+                context.Response.StatusCode = StatusCodes.Status400BadRequest;
+                context.Response.ContentType = "application/json; charset=utf-8";
+
+                var errors = ex.Errors
+                    .Select(error => error.ErrorMessage)
+                    .ToList();
+
+                var errorResponse = new
+                {
+                    message = errors.FirstOrDefault(),
+                    success = false,
+                    status = StatusCodes.Status400BadRequest,
+                    data = new
+                    {
+                        errors
+                    }
+                };
+
+                var finalJson = JsonSerializer.Serialize(errorResponse);
+                await context.Response.WriteAsync(finalJson);
+            }
+            catch (Exception )
             {
                 context.Response.Body = originalBodyStream;
                 context.Response.StatusCode = 500;
@@ -88,7 +185,9 @@ namespace PTN.WebAPI.Extensions
 
                 var errorResponse = new
                 {
-                    message = ex.Message,
+                    message = localizer[
+                        ExceptionCodes.ErrorMessage
+                    ].Value,
                     success = false,
                     status = 500,
                     data = (object?)null

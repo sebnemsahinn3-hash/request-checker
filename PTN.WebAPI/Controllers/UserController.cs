@@ -4,6 +4,8 @@ using PTN.WebAPI.Dtos;
 using PTN.WebAPI.Services;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Localization;
+using PTN.WebAPI.Constants;
 
 namespace PTN.WebAPI.Controllers
 {
@@ -12,10 +14,14 @@ namespace PTN.WebAPI.Controllers
     public class UserController : ControllerBase
     {
         private readonly IUserService _userService;
+        private readonly IStringLocalizer<UserController> _localizer;
 
-        public UserController(IUserService userService)
+        public UserController(
+            IUserService userService,
+            IStringLocalizer<UserController> localizer)
         {
             _userService = userService;
+            _localizer = localizer;
         }
 
         [HttpGet]
@@ -28,8 +34,8 @@ namespace PTN.WebAPI.Controllers
         public async Task<UserDto?> GetUserById(int id)
         {
             var user = await _userService.GetUserByIdAsync(id);
-            if (user == null) throw new System.Collections.Generic.KeyNotFoundException("Kullanıcı bulunamadı.");
-            return user;
+           throw new KeyNotFoundException(
+                _localizer[UserConstants.UserNotFound].Value);
         }
 
         [HttpPost]
@@ -43,8 +49,8 @@ namespace PTN.WebAPI.Controllers
         public async Task<bool> UpdateUser(int id, [FromBody] UserUpdateDto dto)
         {
             var success = await _userService.UpdateUserAsync(id, dto);
-            if (!success) throw new System.Collections.Generic.KeyNotFoundException("Güncellenecek kullanıcı bulunamadı.");
-            return true;
+           throw new KeyNotFoundException(
+                _localizer[UserConstants.UserNotFound].Value);
         }
 
         [HttpDelete("{id}")]
@@ -52,8 +58,8 @@ namespace PTN.WebAPI.Controllers
         public async Task<bool> DeleteUser(int id)
         {
             var success = await _userService.DeleteUserAsync(id);
-            if (!success) throw new System.Collections.Generic.KeyNotFoundException("Silinecek kullanıcı bulunamadı.");
-            return true;
+           throw new KeyNotFoundException(
+                _localizer[UserConstants.UserNotFound].Value);
         }
     }
 }

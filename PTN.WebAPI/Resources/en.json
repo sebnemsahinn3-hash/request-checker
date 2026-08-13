@@ -23,5 +23,8 @@
 
   "Auth:Unauthorized": "Unauthorized Access! Please log in to the system.",
   "Auth:Forbidden": "Forbidden Access! Only the Panel Owner (Admin) can perform this operation.",
-  "Auth:InvalidCredentials": "Invalid email or password!"
+  "Auth:InvalidCredentials": "Invalid email or password!",
+  "Health:SuccessfullyConnected": "Successfully connected to the database.",
+  "Health:NoConnection": "Could not connect to the database.",
+  "RequestMessages:ErrorMessage": "An error occurred during the operation."
 }

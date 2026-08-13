@@ -1,3 +1,6 @@
+using FluentValidation;
+using PTN.WebAPI.Dtos;
+using PTN.WebAPI.Validators;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Localization;
@@ -13,6 +16,8 @@ using PTN.WebAPI.Models;
 using PTN.WebAPI.Repositories;
 using PTN.WebAPI.Services;
 using System.Text;
+using Microsoft.AspNetCore.Identity;
+using PTN.WebAPI.Entities;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -20,7 +25,12 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddRazorPages();
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
-
+builder.Services.AddTransient<
+    IValidator<RequestLogDeleteDto>,
+    RequestLogDeleteDtoValidator>();
+builder.Services.AddScoped<
+    IPasswordHasher<UserEntity>,
+    PasswordHasher<UserEntity>>();
 // SignalR Canlı Bildirim Servisi Kaydı
 builder.Services.AddSignalR();
 
@@ -33,6 +43,9 @@ builder.Services.AddTransient<IAuthService, AuthService>();
 builder.Services.AddSingleton<IRabbitMQPublisher, RabbitMQPublisher>();
 builder.Services.AddTransient<IEmailService, EmailService>();
 builder.Services.AddHostedService<RabbitMQConsumer>();
+builder.Services.AddScoped<
+    IHealthService,
+    HealthService>();
 
 // JWT Bearer Kimlik Doğrulama (Authentication) Yapılandırması
 var jwtSettings = new JwtSettings();
@@ -76,17 +89,23 @@ builder.Services.AddAuthentication(options =>
     };
 });
 
+var allowedOrigins = builder.Configuration
+    .GetSection("AllowedOrigins")
+    .Get<string[]>() ?? Array.Empty<string>();
+
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("AllowConfiguredOrigins", policy =>
-    {
-        policy.SetIsOriginAllowed(_ => true)
-            .AllowAnyHeader()
-            .AllowAnyMethod()
-            .AllowCredentials();
-    });
+    options.AddPolicy(
+        "AllowConfiguredOrigins",
+        policy =>
+        {
+            policy
+                .WithOrigins(allowedOrigins)
+                .AllowAnyHeader()
+                .AllowAnyMethod()
+                .AllowCredentials();
+        });
 });
-
 // Swagger XML Dokümantasyon ve JWT Bearer Kilit Butonu Ayarı
 builder.Services.AddSwaggerGen(c =>
 {

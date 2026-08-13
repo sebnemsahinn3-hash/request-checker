@@ -6,4 +6,3 @@
         public const string ExchangeName = "health_events_exchange";
         public const string RoutingKey = "health.critical";
     }
-}

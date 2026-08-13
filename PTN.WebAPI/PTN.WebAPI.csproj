@@ -7,6 +7,7 @@
 	  <GenerateDocumentationFile>true</GenerateDocumentationFile>
 	  <NoWarn>$(NoWarn);1591</NoWarn>
 	  <GenerateSatelliteAssembliesForCore>true</GenerateSatelliteAssembliesForCore>
+	  <UserSecretsId>102a37b3-da62-44ed-b5e0-ccdf70389b4a</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>

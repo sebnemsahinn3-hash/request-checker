@@ -2,6 +2,8 @@ using Microsoft.AspNetCore.Mvc;
 using PTN.WebAPI.Dtos;
 using PTN.WebAPI.Services;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Localization;
+using PTN.WebAPI.Constants;
 
 namespace PTN.WebAPI.Controllers
 {
@@ -10,10 +12,14 @@ namespace PTN.WebAPI.Controllers
     public class AuthController : ControllerBase
     {
         private readonly IAuthService _authService;
+        private readonly IStringLocalizer<AuthController> _localizer;
 
-        public AuthController(IAuthService authService)
+        public AuthController(
+            IAuthService authService,
+            IStringLocalizer<AuthController> localizer)
         {
             _authService = authService;
+            _localizer = localizer;
         }
 
         [HttpPost("login")]
@@ -22,8 +28,8 @@ namespace PTN.WebAPI.Controllers
             var result = await _authService.LoginAsync(dto);
             if (result == null)
             {
-                throw new System.UnauthorizedAccessException("Geçersiz e-posta veya şifre!");
-            }
+                throw new UnauthorizedAccessException(
+                    _localizer[AuthConstants.InvalidCredentials].Value);            }
             return result;
         }
     }
