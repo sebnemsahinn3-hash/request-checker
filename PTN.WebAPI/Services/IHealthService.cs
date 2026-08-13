@@ -10,7 +10,11 @@ namespace PTN.WebAPI.Services
         HealthStatusDto GetStatus();
 
         List<string> GetLogs();
-        LogFileDto GetLogFile();
+
+        Task<LogFileDto> GetLogFileAsync(
+            CancellationToken cancellationToken = default);
+
+        Task<DatabaseHealthDto> CheckDatabaseAsync(
             CancellationToken cancellationToken = default);
     }
 }

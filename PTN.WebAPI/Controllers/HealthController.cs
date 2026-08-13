@@ -37,10 +37,11 @@ namespace PTN.WebAPI.Controllers
         /// Analiz loglarını .txt metin dosyası olarak bilgisayara indirir.
         /// </summary>
         [HttpGet("download-log")]
-        [HttpGet("DownloadLogFileAsync")]
-        public FileContentResult DownloadLogFile()
+        public async Task<FileContentResult> DownloadLogFileAsync(
+            CancellationToken cancellationToken = default)
         {
-            var logFile = _healthService.GetLogFile();
+            var logFile = await _healthService.GetLogFileAsync(
+                cancellationToken);
 
             return File(
                 logFile.Content,

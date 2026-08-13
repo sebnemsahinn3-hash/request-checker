@@ -48,7 +48,8 @@ namespace PTN.WebAPI.Services
                 };
             }
         }
-        public LogFileDto GetLogFile()
+        public async Task<LogFileDto> GetLogFileAsync(
+            CancellationToken cancellationToken = default)
         {
             var recentLogs = GetLogs();
 
@@ -67,7 +68,9 @@ namespace PTN.WebAPI.Services
 
                 if (File.Exists(filePath))
                 {
-                    logContent = File.ReadAllText(filePath);
+                    logContent = await File.ReadAllTextAsync(
+                        filePath,
+                        cancellationToken);
                 }
             }
 
