@@ -14,10 +14,14 @@ namespace PTN.WebAPI.Extensions
     public class ApiResponseMiddleware
     {
         private readonly RequestDelegate _next;
+        private readonly ILogger<ApiResponseMiddleware> _logger;
 
-        public ApiResponseMiddleware(RequestDelegate next)
+        public ApiResponseMiddleware(
+            RequestDelegate next,
+            ILogger<ApiResponseMiddleware> logger)
         {
             _next = next;
+            _logger = logger;
         }
 
         public async Task InvokeAsync(
@@ -177,8 +181,30 @@ namespace PTN.WebAPI.Extensions
                 var finalJson = JsonSerializer.Serialize(errorResponse);
                 await context.Response.WriteAsync(finalJson);
             }
-            catch (Exception )
+            catch (InvalidOperationException ex)
             {
+                context.Response.Body = originalBodyStream;
+                context.Response.StatusCode = StatusCodes.Status409Conflict;
+                context.Response.ContentType = "application/json; charset=utf-8";
+                context.Response.Headers.Remove("Content-Length");
+
+                var errorResponse = new
+                {
+                    message = ex.Message,
+                    success = false,
+                    status = StatusCodes.Status409Conflict,
+                    data = (object?)null
+                };
+
+                await context.Response.WriteAsync(JsonSerializer.Serialize(errorResponse));
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(
+                    ex,
+                    "Unhandled API error for {Method} {Path}",
+                    context.Request.Method,
+                    context.Request.Path);
                 context.Response.Body = originalBodyStream;
                 context.Response.StatusCode = 500;
                 context.Response.ContentType = "application/json";

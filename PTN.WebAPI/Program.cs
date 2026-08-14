@@ -48,7 +48,10 @@ builder.Services.AddScoped<
     HealthService>();
 
 // JWT Bearer Kimlik Doğrulama (Authentication) Yapılandırması
-var jwtSettings = new JwtSettings();
+var jwtSettings = builder.Configuration
+    .GetSection("Jwt")
+    .Get<JwtSettings>() ?? new JwtSettings();
+builder.Services.AddSingleton(jwtSettings);
 builder.Services.AddAuthentication(options =>
 {
     options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;

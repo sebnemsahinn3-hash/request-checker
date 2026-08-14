@@ -22,7 +22,7 @@ namespace PTN.WebAPI.Services
             {
                 var smtpHost = _configuration["Smtp:Host"] ?? "smtp.gmail.com";
                 var smtpPort = int.Parse(_configuration["Smtp:Port"] ?? "587");
-                var smtpUser = _configuration["Smtp:User"] ?? "sebnemsahinn3@gmail.com";
+                var smtpUser = _configuration["Smtp:User"] ?? string.Empty;
                 var smtpPass = (_configuration["Smtp:Password"] ?? "").Replace(" ", "");
 
                 using var client = new SmtpClient(smtpHost, smtpPort)

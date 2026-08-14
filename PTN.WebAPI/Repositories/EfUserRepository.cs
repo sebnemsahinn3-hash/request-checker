@@ -1,6 +1,7 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using PTN.WebAPI.Entities;
 using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace PTN.WebAPI.Repositories
@@ -14,37 +15,37 @@ namespace PTN.WebAPI.Repositories
             _context = context;
         }
 
-        public async Task<List<UserEntity>> GetAllUsersAsync()
+        public async Task<List<UserEntity>> GetAllUsersAsync(CancellationToken cancellationToken = default)
         {
-            return await _context.Users.ToListAsync();
+            return await _context.Users.ToListAsync(cancellationToken);
         }
 
-        public async Task<UserEntity?> GetUserByIdAsync(int id)
+        public async Task<UserEntity?> GetUserByIdAsync(int id, CancellationToken cancellationToken = default)
         {
-            return await _context.Users.FirstOrDefaultAsync(u => u.Id == id);
+            return await _context.Users.FirstOrDefaultAsync(u => u.Id == id, cancellationToken);
         }
 
-        public async Task<UserEntity?> GetUserByEmailAsync(string email)
+        public async Task<UserEntity?> GetUserByEmailAsync(string email, CancellationToken cancellationToken = default)
         {
-            return await _context.Users.FirstOrDefaultAsync(u => u.Email == email);
+            return await _context.Users.FirstOrDefaultAsync(u => u.Email == email, cancellationToken);
         }
 
-        public async Task AddUserAsync(UserEntity entity)
+        public async Task AddUserAsync(UserEntity entity, CancellationToken cancellationToken = default)
         {
-            await _context.Users.AddAsync(entity);
-            await _context.SaveChangesAsync();
+            await _context.Users.AddAsync(entity, cancellationToken);
+            await _context.SaveChangesAsync(cancellationToken);
         }
 
-        public async Task UpdateUserAsync(UserEntity entity)
+        public async Task UpdateUserAsync(UserEntity entity, CancellationToken cancellationToken = default)
         {
             _context.Users.Update(entity);
-            await _context.SaveChangesAsync();
+            await _context.SaveChangesAsync(cancellationToken);
         }
 
-        public async Task DeleteUserAsync(UserEntity entity)
+        public async Task DeleteUserAsync(UserEntity entity, CancellationToken cancellationToken = default)
         {
             _context.Users.Remove(entity);
-            await _context.SaveChangesAsync();
+            await _context.SaveChangesAsync(cancellationToken);
         }
     }
 }

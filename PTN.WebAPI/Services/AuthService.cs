@@ -23,11 +23,12 @@ namespace PTN.WebAPI.Services
 
         public AuthService(
             IUserRepository userRepository,
-            IPasswordHasher<UserEntity> passwordHasher)
+            IPasswordHasher<UserEntity> passwordHasher,
+            JwtSettings jwtSettings)
         {
             _userRepository = userRepository;
             _passwordHasher = passwordHasher;
-            _jwtSettings = new JwtSettings();
+            _jwtSettings = jwtSettings;
         }
 
         public async Task<TokenResponseDto?> LoginAsync(LoginDto dto)
